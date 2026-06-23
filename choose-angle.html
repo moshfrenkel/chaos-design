@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>בחירת זווית — כאוס דיזיינר בשפה פשוטה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1417; --bg2:#111d21; --panel:#13211f;
+  --turq:#2BBCB3; --orange:#F4A261;
+  --ink:#eaf2f1; --dim:#8fa3a0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Heebo',sans-serif;line-height:1.6;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:840px;margin:0 auto;padding:clamp(28px,7vw,70px) clamp(18px,5vw,40px) 120px}
+
+/* header */
+.kick{font-family:'Heebo';font-weight:700;color:var(--orange);font-size:14px;margin-bottom:10px}
+h1{font-family:'Secular One';font-weight:400;font-size:clamp(30px,8vw,56px);line-height:1.05;margin-bottom:14px}
+h1 em{color:var(--turq);font-style:normal}
+.intro{font-weight:300;font-size:clamp(16px,4vw,19px);color:var(--dim);max-width:52ch}
+.intro b{color:var(--ink);font-weight:500}
+.divider{height:2px;background:linear-gradient(90deg,var(--turq),transparent);margin:30px 0 8px;border-radius:2px}
+
+/* option */
+.opt{position:relative;background:var(--bg2);border-radius:18px;padding:clamp(20px,5vw,34px);
+  margin-top:24px;border:1px solid #1d2c2f;transition:border-color .2s,transform .2s}
+.opt.rn-chosen{border-color:var(--turq);box-shadow:0 0 0 2px var(--turq), 0 20px 50px -20px rgba(43,188,179,.4)}
+.opt-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.num{font-family:'Secular One';color:var(--orange);font-size:clamp(34px,9vw,52px);line-height:.8}
+.name{font-family:'Secular One';font-size:clamp(20px,5.2vw,28px)}
+.metaphor{color:var(--dim);font-weight:300;font-size:clamp(15px,3.8vw,17.5px);margin:12px 0 20px;max-width:56ch}
+.metaphor b{color:var(--ink);font-weight:500}
+
+/* preview box = how it would actually read */
+.preview{background:var(--panel);border-right:4px solid var(--turq);border-radius:10px;
+  padding:clamp(16px,4vw,24px);margin-bottom:18px}
+.preview .plabel{font-family:'Heebo';font-weight:700;font-size:11.5px;letter-spacing:.04em;
+  color:var(--turq);margin-bottom:10px;text-transform:none}
+.preview .ptitle{font-family:'Secular One';font-size:clamp(22px,6vw,34px);line-height:1.05;margin-bottom:10px}
+.preview .ptext{font-weight:300;font-size:clamp(15px,3.9vw,17.5px);color:#cdd9d7;line-height:1.55}
+
+.how{display:flex;gap:12px;align-items:flex-start;font-size:clamp(14px,3.6vw,16px)}
+.how .htag{flex:0 0 auto;font-weight:700;color:var(--orange);font-size:13.5px;padding-top:1px}
+.how .htxt{color:#cdd9d7;font-weight:300}
+
+.choose{margin-top:20px;display:inline-flex;align-items:center;gap:10px;
+  background:transparent;border:2px solid var(--turq);color:var(--turq);
+  font-family:'Heebo';font-weight:700;font-size:15px;padding:11px 26px;border-radius:30px;cursor:pointer;
+  transition:background .18s,color .18s,transform .15s}
+.choose:hover{background:var(--turq);color:#04201d}
+.choose:active{transform:scale(.96)}
+.opt.rn-chosen .choose{background:var(--turq);color:#04201d}
+.opt.rn-chosen .choose::after{content:' · נבחר'}
+.choose .dot{width:11px;height:11px;border-radius:50%;border:2px solid currentColor}
+.opt.rn-chosen .choose .dot{background:#04201d;border-color:#04201d}
+
+/* footer note */
+.foot{margin-top:40px;text-align:center;color:var(--dim);font-size:14px;font-weight:300;line-height:1.7}
+.foot b{color:var(--ink);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kick">בחר זווית · אחר כך אכתוב מחדש את כל העמוד לפיה</div>
+  <h1>איך מסבירים את <em>הכאוס דיזיינר</em> לבן אדם רגיל?</h1>
+  <p class="intro">העמוד הקודם היה טכני מדי. הכנתי <b>5 דרכים שונות</b> להסביר את אותו דבר, כל אחת עם משל אחר מהחיים. תקרא, תסמן הערות אם בא לך, ותלחץ <b>"בחר"</b> על זו שהכי מדברת אליך.</p>
+  <div class="divider"></div>
+
+  <!-- 1 -->
+  <article class="opt" data-note="1 · השף העצלן">
+    <div class="opt-top"><span class="num">1</span><span class="name">השף העצלן</span></div>
+    <p class="metaphor">דמיין שף שכל יום מכין בדיוק את אותה חביתה, כי ככה בטוח לו. <b>הכלי הזה נכנס לו למטבח ומערבב לו את המצרכים בכוח,</b> עד שהוא חייב להמציא מנה חדשה.</p>
+    <div class="preview">
+      <div class="plabel">ככה הכותרת והפתיח יישמעו בעמוד</div>
+      <div class="ptitle">תכריח את המחשב לצאת מהמטבח הקבוע שלו</div>
+      <div class="ptext">כל פעם שאתה מבקש מהמחשב לעצב משהו, הוא מכין לך את אותה מנה משעממת ששמורה לו. הכלי הזה זורק לו מצרכים חדשים על השיש ואומר: תמציא משהו אחר.</div>
+    </div>
+    <div class="how"><span class="htag">ואיך זה עובד?</span><span class="htxt">כל פעם מגרילים לו "מתכון" אחר של חוקי עיצוב, והוא חייב לבשל בדיוק לפיו.</span></div>
+    <button class="choose" type="button"><span class="dot"></span>בחר את זה</button>
+  </article>
+
+  <!-- 2 -->
+  <article class="opt" data-note="2 · קוביית ההפתעות">
+    <div class="opt-top"><span class="num">2</span><span class="name">קוביית ההפתעות</span></div>
+    <p class="metaphor">כמו במשחק קופסה. במקום שהמחשב יבחר בעצמו (והוא תמיד בוחר את הצפוי), <b>מגלגלים קובייה והיא זו שמחליטה.</b> כל גלגול נופל אחרת.</p>
+    <div class="preview">
+      <div class="plabel">ככה הכותרת והפתיח יישמעו בעמוד</div>
+      <div class="ptitle">תן לקובייה להחליט, לא למחשב</div>
+      <div class="ptext">המחשב תמיד הולך על בטוח, ובטוח זה משעמם. אז לקחנו ממנו את ההחלטה ונתנו אותה לקובייה. כל גלגול מוציא עיצוב אחר לגמרי, גם אתה מופתע.</div>
+    </div>
+    <div class="how"><span class="htag">ואיך זה עובד?</span><span class="htxt">מגלגלים קובייה שכל צד שלה הוא חוק עיצוב אחר, והמחשב בונה בדיוק לפי מה שנפל.</span></div>
+    <button class="choose" type="button"><span class="dot"></span>בחר את זה</button>
+  </article>
+
+  <!-- 3 -->
+  <article class="opt" data-note="3 · למה הכל נראה אותו דבר">
+    <div class="opt-top"><span class="num">3</span><span class="name">למה הכל נראה אותו דבר?</span></div>
+    <p class="metaphor">שמת לב שכל האתרים, כל הפוסטים וכל המצגות נראים אותו דבר בדיוק? <b>זה לא במקרה,</b> וזה בדיוק מה שהכלי הזה בא לשבור.</p>
+    <div class="preview">
+      <div class="plabel">ככה הכותרת והפתיח יישמעו בעמוד</div>
+      <div class="ptitle">נמאס שהכל נראה אותו דבר?</div>
+      <div class="ptext">אתר, פוסט, מצגת, אותו תבנית שוב ושוב. זה קורה כי המחשב פשוט מעתיק את הממוצע של מה שכבר קיים בעולם. הכלי הזה נולד כדי לעצור אותו רגע לפני, ולשלוח אותו למקום אחר.</div>
+    </div>
+    <div class="how"><span class="htag">ואיך זה עובד?</span><span class="htxt">במקום לתת למחשב ללכת על המוכר, מאלצים אותו כל פעם לבחור דרך שהוא לא היה בוחר לבד.</span></div>
+    <button class="choose" type="button"><span class="dot"></span>בחר את זה</button>
+  </article>
+
+  <!-- 4 -->
+  <article class="opt" data-note="4 · ה-DJ שמסרב ללהיט">
+    <div class="opt-top"><span class="num">4</span><span class="name">ה־DJ שמסרב לנגן את הלהיט</span></div>
+    <p class="metaphor">כל אחד יכול לנגן את השיר שכולם מכירים. <b>אמן אמיתי מפתיע אותך.</b> הכלי הזה הופך את המחשב מ־DJ של חתונות ליוצר.</p>
+    <div class="preview">
+      <div class="plabel">ככה הכותרת והפתיח יישמעו בעמוד</div>
+      <div class="ptitle">מ־DJ של חתונות ליוצר אמיתי</div>
+      <div class="ptext">המחשב הוא כמו DJ שמנגן רק להיטים שכולם מכירים, כי זה בטוח. הכלי הזה מכריח אותו לנגן משהו שעוד לא שמעת. בכל פעם משהו טרי, שלא נשמע כמו כל השאר.</div>
+    </div>
+    <div class="how"><span class="htag">ואיך זה עובד?</span><span class="htxt">כל יצירה מקבלת "סט חוקים" אקראי משלה, והמחשב חייב להישאר נאמן לו עד הסוף.</span></div>
+    <button class="choose" type="button"><span class="dot"></span>בחר את זה</button>
+  </article>
+
+  <!-- 5 -->
+  <article class="opt" data-note="5 · מכונת המזל">
+    <div class="opt-top"><span class="num">5</span><span class="name">מכונת המזל</span></div>
+    <p class="metaphor">מושכים את הידית, <b>וכל פעם נופל צירוף אחר של חוקים</b> שחייבים לשחק לפיו. בלי לדעת מראש מה ייצא.</p>
+    <div class="preview">
+      <div class="plabel">ככה הכותרת והפתיח יישמעו בעמוד</div>
+      <div class="ptitle">משוך את הידית. כל פעם נופל משהו אחר.</div>
+      <div class="ptext">כמו מכונת מזל, רק שבמקום פירות נופלים חוקי עיצוב. אתה מושך, מקבל צירוף, והמחשב בונה בדיוק לפיו. אף תוצאה לא חוזרת על עצמה פעמיים.</div>
+    </div>
+    <div class="how"><span class="htag">ואיך זה עובד?</span><span class="htxt">כל "משיכה" מגרילה צירוף של חוקים, והמחשב יוצר משהו חדש שמתאים בול לצירוף הזה.</span></div>
+    <button class="choose" type="button"><span class="dot"></span>בחר את זה</button>
+  </article>
+
+  <p class="foot">בחרת? לחץ על <b>"העתק הערות לקלוד"</b> למטה, הדבק לי בצ'אט, ואני כותב מחדש את כל העמוד בשפה הזאת.<br>אפשר גם לשלב כמה, פשוט תכתוב לי בהערה.</p>
+</div>
+
+<script>
+/* single-choice toggle, marks .rn-chosen for the notes widget to pick up */
+document.querySelectorAll('.opt .choose').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const opt=btn.closest('.opt');
+    const already=opt.classList.contains('rn-chosen');
+    document.querySelectorAll('.opt').forEach(o=>o.classList.remove('rn-chosen'));
+    if(!already){opt.classList.add('rn-chosen');opt.scrollIntoView({behavior:'smooth',block:'center'});}
+  });
+});
+</script>
+
+<!-- ============================================================
+     REVIEW-NOTES WIDGET v1  ·  drop-in for Mosh's review/decision pages
+     ============================================================ -->
+<style>
+  .rn-btn{position:absolute; top:8px; left:8px; z-index:40;width:30px; height:30px; border-radius:50%; cursor:pointer;
+    background:rgba(20,28,32,.78); border:1px solid rgba(43,188,179,.55);color:#2BBCB3; display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(4px); transition:transform .15s, background .15s; padding:0;}
+  .rn-btn:hover{transform:scale(1.12); background:#2BBCB3; color:#04201d}
+  .rn-btn.has-note{background:#F4A261; border-color:#F4A261; color:#231405}
+  .rn-host{position:relative}
+  .rn-pop{position:fixed; inset:0; z-index:9998; display:none;background:rgba(4,8,10,.62); backdrop-filter:blur(3px);
+    align-items:center; justify-content:center; padding:20px;}
+  .rn-pop.open{display:flex}
+  .rn-card{width:min(440px,94vw); background:#141c20; border:1px solid #2a3a3a;border-radius:14px; padding:20px; box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
+    font-family:'Heebo',system-ui,sans-serif; direction:rtl;}
+  .rn-card h4{margin:0 0 4px; font-size:17px; color:#eaf2f1; font-weight:700}
+  .rn-card .rn-sub{font-size:12.5px; color:#8fa3a0; margin-bottom:12px}
+  .rn-card textarea{width:100%; min-height:110px; resize:vertical; border-radius:9px;background:#0d1417; border:1px solid #2a3a3a; color:#eaf2f1;
+    padding:11px 13px; font-family:inherit; font-size:15px; line-height:1.55; direction:rtl;}
+  .rn-card textarea:focus{outline:none; border-color:#2BBCB3}
+  .rn-row{display:flex; gap:9px; margin-top:13px}
+  .rn-row button{flex:1; padding:11px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:14.5px}
+  .rn-save{background:#2BBCB3; color:#04201d}
+  .rn-del{background:transparent; color:#e06a6a; border:1px solid #3a2a2a !important; flex:0 0 auto !important; padding-left:16px !important; padding-right:16px !important}
+  .rn-cancel{background:#1d2a2e; color:#9fb0ad}
+  .rn-copy{position:fixed; bottom:18px; left:18px; z-index:9997;display:flex; align-items:center; gap:9px; padding:13px 20px;
+    border-radius:30px; border:none; cursor:pointer;background:#2BBCB3; color:#04201d; font-family:'Heebo',system-ui,sans-serif;
+    font-weight:700; font-size:14.5px; box-shadow:0 12px 34px -10px rgba(43,188,179,.6);transition:transform .15s, opacity .2s; opacity:1;}
+  .rn-copy.active{opacity:1}
+  .rn-copy:hover{transform:translateY(-2px)}
+  .rn-copy .rn-count{background:#04201d; color:#2BBCB3; border-radius:20px; padding:1px 9px; font-size:12.5px; min-width:20px; text-align:center}
+  .rn-toast{position:fixed; bottom:74px; left:50%; transform:translateX(-50%);background:#6fd49a; color:#04200f; font-family:'Heebo',system-ui,sans-serif;
+    font-weight:700; font-size:14px; padding:11px 20px; border-radius:9px;opacity:0; transition:opacity .25s; pointer-events:none; z-index:9999;}
+  .rn-toast.show{opacity:1}
+  @media (max-width:560px){ .rn-btn{width:26px;height:26px;top:6px;left:6px} }
+</style>
+<button class="rn-copy" id="rnCopy" aria-label="העתק את כל ההערות">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="8" height="10" rx="1"/><path d="M5.5 3V2.2A1.2 1.2 0 0 1 6.7 1h5.1A1.2 1.2 0 0 1 13 2.2v8.6a1.2 1.2 0 0 1-1.2 1.2H11"/></svg>
+  <span>העתק הערות לקלוד</span><span class="rn-count" id="rnCount">0</span>
+</button>
+<div class="rn-pop" id="rnPop">
+  <div class="rn-card">
+    <h4 id="rnTitle">הערה</h4>
+    <div class="rn-sub" id="rnLabel"></div>
+    <textarea id="rnText" placeholder="מה ההערה שלך על הפריט הזה?"></textarea>
+    <div class="rn-row">
+      <button class="rn-save" id="rnSave">שמור</button>
+      <button class="rn-del" id="rnDel">מחק</button>
+      <button class="rn-cancel" id="rnCancel">בטל</button>
+    </div>
+  </div>
+</div>
+<div class="rn-toast" id="rnToast"></div>
+<script>
+(function(){
+  const PAGE = (document.title || location.pathname).trim();
+  const KEY = 'rn_notes::' + PAGE;
+  let store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e){ store = {}; }
+  const pop = document.getElementById('rnPop');
+  const txt = document.getElementById('rnText');
+  const lblEl = document.getElementById('rnLabel');
+  const copyBtn = document.getElementById('rnCopy');
+  const countEl = document.getElementById('rnCount');
+  const toast = document.getElementById('rnToast');
+  let current = null;
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+  function showToast(m){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2400); }
+  function count(){ return Object.values(store).filter(v=>v && v.trim()).length; }
+  function refresh(){ const n = count(); countEl.textContent = n; copyBtn.classList.toggle('active', n>0); }
+  document.querySelectorAll('[data-note]').forEach(el=>{
+    const label = el.getAttribute('data-note').trim();
+    const cs = getComputedStyle(el);
+    if(cs.position === 'static') el.classList.add('rn-host');
+    const btn = document.createElement('button');
+    btn.className = 'rn-btn'; btn.type = 'button';
+    btn.setAttribute('aria-label','הערה: ' + label);
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 2.5l2 2L6 12l-2.6.6L4 10z" stroke-linejoin="round"/></svg>';
+    if(store[label] && store[label].trim()) btn.classList.add('has-note');
+    btn.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); open(label, btn); });
+    el.appendChild(btn);
+  });
+  function open(label, btn){ current = {label, btn}; lblEl.textContent = label; txt.value = store[label] || ''; pop.classList.add('open'); setTimeout(()=>txt.focus(), 50); }
+  function close(){ pop.classList.remove('open'); current=null; }
+  document.getElementById('rnSave').addEventListener('click', ()=>{
+    if(!current) return; const v = txt.value.trim();
+    if(v){ store[current.label]=v; current.btn.classList.add('has-note'); } else { delete store[current.label]; current.btn.classList.remove('has-note'); }
+    save(); refresh(); close(); showToast('נשמר');
+  });
+  document.getElementById('rnDel').addEventListener('click', ()=>{ if(!current) return; delete store[current.label]; current.btn.classList.remove('has-note'); save(); refresh(); close(); showToast('נמחק'); });
+  document.getElementById('rnCancel').addEventListener('click', close);
+  pop.addEventListener('click', e=>{ if(e.target===pop) close(); });
+  copyBtn.addEventListener('click', ()=>{
+    const entries = Object.entries(store).filter(([,v])=>v && v.trim());
+    const chosenEl = document.querySelector('.rn-chosen[data-note]');
+    const chosen = chosenEl ? chosenEl.getAttribute('data-note').trim() : null;
+    if(!entries.length && !chosen){ showToast('אין הערות עדיין'); return; }
+    let out = 'משוב על "' + PAGE + '":\n\n';
+    if(chosen) out += '★ הבחירה שלי: ' + chosen + '\n\n';
+    if(entries.length){ out += 'הערות:\n'; entries.forEach(([label,v])=>{ out += '• ' + label + ': ' + v.trim() + '\n'; }); }
+    const done = ()=>showToast('הועתק. הדבק בצ\'אט.');
+    if(navigator.clipboard){ navigator.clipboard.writeText(out).then(done).catch(()=>fb(out,done)); } else fb(out,done);
+  });
+  function fb(t,cb){ const x=document.createElement('textarea'); x.value=t; document.body.appendChild(x); x.select(); try{document.execCommand('copy');cb();}catch(e){} document.body.removeChild(x); }
+  refresh();
+})();
+</script>
+<!-- END REVIEW-NOTES WIDGET -->
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מרד במטבח — chaos-design</title>
+<meta name="description" content="המחשב הוא שף שמכין כל יום אותה מנה. chaos-design נכנס לו למטבח ומכריח אותו להמציא משהו חדש. לחץ והחזק, תבשל מנה, וקח את המתכון.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800;900&family=Secular+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* roll obeyed: LAYOUT collage/torn mess · INTERACTION press-and-hold reveal · CONTAINER ledger/receipt rows
+   TYPE kinetic · PALETTE near-mono cream+violent red · ANOMALY recurring hand-drawn chef mascot
+   REFERENCE Swiss brutalist protest poster · WILDCARD one uninterrupted scene, no sections */
+:root{--paper:#EDE3CC;--ink:#15120B;--red:#E01B1B;--smudge:#cfc3a4;
+  --disp:'Secular One',sans-serif;--body:'Heebo',sans-serif;--mono:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+  background-image:radial-gradient(circle at 20% 10%, rgba(0,0,0,.04) 0 1px, transparent 1px),radial-gradient(circle at 70% 60%, rgba(0,0,0,.03) 0 1px, transparent 1px);
+  background-size:7px 7px,11px 11px}
+::selection{background:var(--red);color:var(--paper)}
+.mono{font-family:var(--mono)}
+.scene{max-width:760px;margin:0 auto;padding:0 clamp(16px,5vw,40px)}
+
+/* one continuous scene, brutalist rhythm */
+.block{padding:clamp(34px,8vw,72px) 0;border-bottom:3px solid var(--ink)}
+.block:last-of-type{border-bottom:none}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:700;font-size:12px;
+  background:var(--ink);color:var(--paper);padding:6px 12px;transform:rotate(-2deg);margin-bottom:18px}
+.stamp.red{background:var(--red)}
+
+/* kinetic brutalist type */
+.kin{font-family:var(--disp);line-height:.82;letter-spacing:0;text-transform:none}
+.kin .l{display:inline-block;animation:kb 2.8s ease-in-out infinite}
+@keyframes kb{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-.04em) rotate(-1deg)}}
+.mega{font-size:clamp(58px,19vw,150px)}
+.big{font-size:clamp(34px,10vw,78px)}
+.red{color:var(--red)}
+.uline{box-shadow:inset 0 -.16em 0 var(--red)}
+
+/* hero */
+#top{padding-top:clamp(28px,7vw,56px)}
+.topbar{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);
+  font-weight:700;font-size:12px;border-bottom:3px solid var(--ink);padding-bottom:10px;margin-bottom:clamp(24px,6vw,46px)}
+.lead{font-weight:300;font-size:clamp(17px,4.6vw,25px);line-height:1.5;max-width:30ch;margin-top:22px}
+.lead b{font-weight:700}
+.heroflex{position:relative}
+.chef-big{position:absolute;left:-6px;bottom:-10px;width:clamp(90px,26vw,170px);transform:rotate(6deg);opacity:.92}
+
+/* receipt / ledger rows (CONTAINER) */
+.receipt{font-family:var(--mono);margin-top:8px}
+.rrow{display:flex;align-items:baseline;gap:6px;padding:11px 0;border-bottom:1px dashed rgba(21,18,11,.4)}
+.rrow .it{font-family:var(--body);font-weight:700;font-size:clamp(15px,4vw,19px);white-space:nowrap}
+.rrow .dots{flex:1;border-bottom:2px dotted rgba(21,18,11,.35);transform:translateY(-4px)}
+.rrow .pr{font-family:var(--mono);font-weight:700;font-size:clamp(13px,3.4vw,15px);color:var(--red);white-space:nowrap}
+.rsmall{font-weight:300;font-size:13.5px;color:#5a5341;margin-top:3px;font-family:var(--body)}
+
+/* recipe steps as numbered ledger */
+.steps{margin-top:10px}
+.step{display:grid;grid-template-columns:auto 1fr;gap:clamp(14px,4vw,24px);align-items:start;
+  padding:16px 0;border-bottom:2px solid var(--ink)}
+.step:last-child{border-bottom:none}
+.step .sn{font-family:var(--disp);font-size:clamp(34px,9vw,60px);line-height:.8;color:var(--red)}
+.step .st{font-family:var(--disp);font-size:clamp(18px,5vw,26px)}
+.step .sd{font-weight:300;font-size:clamp(14px,3.8vw,16.5px);margin-top:3px;line-height:1.45}
+
+/* live demo: press & hold to cook */
+#cook{text-align:center}
+.pan{position:relative;width:min(86vw,380px);margin:24px auto 0;aspect-ratio:1;
+  border:4px solid var(--ink);background:var(--paper);overflow:hidden}
+.ticket{position:absolute;inset:0;padding:9% 8%;display:grid;align-content:center;gap:7px;
+  opacity:0;transition:opacity .35s;text-align:start}
+.ticket.show{opacity:1}
+.ticket .th{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--red);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:3px}
+.ticket .trow{display:flex;justify-content:space-between;gap:8px;font-size:12px;align-items:baseline}
+.ticket .tk{font-family:var(--mono);font-weight:700;color:#6b6450;white-space:nowrap}
+.ticket .tv{font-family:var(--body);font-weight:700;font-size:13px;text-align:start}
+.ticket .tban{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:6px;border-top:1px dashed var(--ink);padding-top:6px}
+.coverhint{position:absolute;inset:0;display:grid;place-items:center;background:var(--ink);color:var(--paper);
+  font-family:var(--disp);font-size:clamp(20px,6vw,30px);transition:opacity .3s;z-index:2;text-align:center;padding:8%}
+.coverhint.gone{opacity:0;pointer-events:none}
+.coverhint small{display:block;font-family:var(--mono);font-size:12px;font-weight:400;margin-top:10px;opacity:.8}
+.charge{position:absolute;left:0;bottom:0;height:6px;width:0;background:var(--red);z-index:3;transition:width .05s linear}
+.cookbtn{margin-top:22px;display:inline-block;font-family:var(--disp);font-size:clamp(20px,5.5vw,26px);
+  background:var(--red);color:var(--paper);border:4px solid var(--ink);padding:14px 40px;cursor:pointer;
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transform:rotate(-1deg);
+  box-shadow:7px 7px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.cookbtn.hold{transform:rotate(-1deg) translate(4px,4px);box-shadow:3px 3px 0 var(--ink)}
+.cooknote{font-family:var(--mono);font-size:11.5px;color:#5a5341;margin-top:16px;line-height:1.6}
+
+/* take it */
+#take{text-align:start}
+.path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3.2vw,15px);
+  display:inline-block;background:var(--ink);color:var(--paper);padding:10px 16px;margin:14px 0 26px;transform:rotate(-.6deg)}
+.acts{display:flex;flex-wrap:wrap;gap:14px}
+.btn{font-family:var(--mono);font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;
+  border:3px solid var(--ink);background:var(--paper);color:var(--ink);padding:13px 22px;
+  transition:background .15s,color .15s,transform .12s}
+.btn:hover{background:var(--ink);color:var(--paper)}.btn:active{transform:translate(2px,2px)}
+.btn.solid{background:var(--red);color:var(--paper);border-color:var(--ink)}
+.btn.solid:hover{background:var(--ink)}
+.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:30px 0;color:var(--ink)}
+.switch a{color:var(--red);font-weight:700}
+footer{background:var(--ink);color:var(--paper);text-align:center;padding:40px 20px;font-family:var(--mono);font-size:12px;line-height:1.8}
+footer .fbig{font-family:var(--disp);font-size:clamp(24px,8vw,46px);display:block;margin-bottom:10px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);
+  color:var(--paper);font-family:var(--mono);font-weight:700;font-size:13px;padding:13px 24px;z-index:99;transition:transform .35s}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){.kin .l{animation:none}}
+</style>
+</head>
+<body>
+<!-- bespoke hand-drawn chef mascot, reused throughout (ANOMALY) -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="chef">
+    <circle cx="50" cy="58" r="26" fill="none" stroke="#15120B" stroke-width="3.5"/>
+    <path d="M26 44 Q22 22 38 24 Q40 10 56 18 Q74 12 72 30 Q86 30 78 46 Z" fill="#EDE3CC" stroke="#15120B" stroke-width="3.5" stroke-linejoin="round"/>
+    <line x1="28" y1="46" x2="74" y2="46" stroke="#15120B" stroke-width="3.5"/>
+    <circle cx="42" cy="58" r="2.6" fill="#15120B"/><circle cx="58" cy="58" r="2.6" fill="#15120B"/>
+    <path d="M40 70 Q50 78 60 70" fill="none" stroke="#E01B1B" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M76 60 Q92 58 90 74" fill="none" stroke="#15120B" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+</defs></svg>
+
+<div class="scene">
+
+  <!-- HERO -->
+  <section class="block" id="top">
+    <div class="topbar"><span>CHAOS-DESIGN</span><span>גרסת השף</span></div>
+    <div class="stamp red mono">מנוע נגד שעמום · סקיל ל-CLAUDE CODE</div>
+    <div class="heroflex">
+      <h1 class="kin mega">מֶרֶד<br><span class="red">בַּמִּטְבָּח</span></h1>
+      <svg viewBox="0 0 100 100" class="chef-big" aria-hidden="true"><use href="#chef"/></svg>
+    </div>
+    <p class="lead">המחשב הוא שף שמכין כל יום בדיוק <b>אותה מנה</b>, כי ככה בטוח לו. הכלי הזה נכנס לו למטבח, מערבב את המצרכים, ומכריח אותו להמציא משהו שעוד לא טעמת.</p>
+  </section>
+
+  <!-- THE PROBLEM as a tired menu -->
+  <section class="block">
+    <span class="stamp mono">התפריט הקבוע של המחשב</span>
+    <h2 class="kin big">אותה מנה.<br>כל פעם.</h2>
+    <div class="receipt">
+      <div class="rrow"><span class="it">הכרטיס המעוגל</span><span class="dots"></span><span class="pr">שוב</span></div>
+      <div class="rrow"><span class="it">האימוג'י העצלן</span><span class="dots"></span><span class="pr">שוב</span></div>
+      <div class="rrow"><span class="it">הכותרת באמצע + 3 בלוקים</span><span class="dots"></span><span class="pr">שוב</span></div>
+      <div class="rrow"><span class="it">אותם צבעים, אותו סידור</span><span class="dots"></span><span class="pr">שוב</span></div>
+    </div>
+    <p class="rsmall" style="margin-top:18px;font-size:clamp(14px,3.8vw,16.5px);max-width:42ch;line-height:1.55">המחשב מבשל תמיד מהמתכון הכי בטוח, הממוצע של כל מה שראה אי פעם. כל עוד הוא בוחר את המתכון, לא תקבל מנה אחרת.</p>
+  </section>
+
+  <!-- THE RECIPE / method -->
+  <section class="block">
+    <span class="stamp red mono">המתכון של המטבח המשוגע</span>
+    <h2 class="kin big">חמישה צעדים,<br>בכל מנה</h2>
+    <div class="steps">
+      <div class="step"><div class="sn">1</div><div><div class="st">נִיצוֹץ</div><div class="sd">זורקים על השיש רעיון מטורף מהחיים, משהו לגמרי לא קשור.</div></div></div>
+      <div class="step"><div class="sn">2</div><div><div class="st">גַּלְגּוּל</div><div class="sd">מגלגלים קובייה. היא בוחרת את הסגנון, לא המחשב.</div></div></div>
+      <div class="step"><div class="sn">3</div><div><div class="st">בִּישׁוּל</div><div class="sd">בונים בדיוק לפי מה שיצא, גם כשלא נוח, בלי לרמות.</div></div></div>
+      <div class="step"><div class="sn">4</div><div><div class="st">כְּלָלֵי הַבַּיִת</div><div class="sd">רשימת אסור שאי אפשר לעבור: אין כרטיס משעמם, אין אימוג'י.</div></div></div>
+      <div class="step"><div class="sn">5</div><div><div class="st">טְעִימָה</div><div class="sd">טועמים. יצא רגיל? זורקים ומתחילים מהתחלה.</div></div></div>
+    </div>
+  </section>
+
+  <!-- LIVE DEMO: press & hold to cook -->
+  <section class="block" id="cook">
+    <span class="stamp mono">נסה בעצמך · אמיתי לגמרי</span>
+    <h2 class="kin big">תבשל מנה</h2>
+    <p class="rsmall" style="font-size:clamp(14px,3.8vw,16.5px);max-width:40ch;margin:10px auto 0;line-height:1.55">לחץ והחזק על הכפתור כאילו אתה מבשל. כשהמנה מוכנה, היא מתגלה. כל פעם יוצא משהו אחר.</p>
+    <div class="pan">
+      <div class="ticket" id="ticket"></div>
+      <div class="coverhint" id="cover">לחץ והחזק<small>כדי לבשל מנה</small></div>
+      <div class="charge" id="charge"></div>
+    </div>
+    <button class="cookbtn" id="cookbtn">לחץ והחזק</button>
+    <p class="cooknote mono">כל שליפה אחרת מהקודמת. אותה בקשה, מנה אחרת בכל פעם.</p>
+  </section>
+
+  <!-- TAKE IT -->
+  <section class="block" id="take">
+    <span class="stamp red mono">קח את המתכון</span>
+    <h2 class="kin big">העתק. הדבק.<br>תבשל בעצמך.</h2>
+    <p class="rsmall" style="font-size:clamp(14px,3.8vw,16.5px);max-width:42ch;margin-top:12px;line-height:1.55">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
+    <span class="path">~/.claude/skills/chaos-design/</span>
+    <div class="acts">
+      <button class="btn solid" id="copySkill">העתק SKILL.md</button>
+      <a class="btn" href="SKILL.md" download>הורד SKILL.md</a>
+      <a class="btn" href="dice.py" download>הורד dice.py</a>
+    </div>
+    <p class="rsmall" style="margin-top:22px;font-family:var(--mono);font-size:11.5px">דורש גם את creative-seeds (שלב הניצוץ). אותה ערכה אנטי-AI.</p>
+  </section>
+
+  <p class="switch">רוצה לטעום את אותו רעיון בסגנון אחר? <a href="dj.html">עבור לגרסת ה-DJ ←</a></p>
+</div>
+
+<footer>
+  <span class="fbig">תפסיק לקבל את אותה מנה.</span>
+  chaos-design · a Claude Code skill by Mosh Frenkel<br>
+  העמוד הזה בושל על ידי הסקיל עצמו
+</footer>
+
+<div class="toast" id="toast">הועתק</div>
+
+<script>
+/* real dice engine (web deck) */
+const DECKS={
+ LAYOUT:["collage / overlapping torn pieces, intentional mess","hard diagonal grid (everything skewed on one axis)","scattered absolute 'playground' (objects float in space)","editorial spread with marginalia & pull-quotes in the gutter","full-bleed kinetic TYPE as the layout (words ARE the design)","radial / circular orbit around one center point","anarchic masonry (wildly unequal blocks, no rhythm)","spatial map / blueprint / floor-plan","brutal asymmetric split (70/30, one side invades the other)","horizontal sideways flow (a journey across a wall)"],
+ INTERACTION:["physics: drag & throw elements, they collide with walls","audio-reactive: generated sound drives the visuals","scroll-jack scenes that morph between fixed states","cursor-as-tool (marker / spotlight / magnet / eraser)","gyro / tilt parallax (phone movement moves the world)","press-and-hold to reveal / charge / unlock","draw-to-reveal (user paints content into view)","time-decay: elements mutate, rot, or grow over time","beat / pulse sync (everything breathes on one clock)","hover-distortion / liquid warp on contact"],
+ CONTAINER:["torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames","ticket stub / boarding pass","speech bubbles","terminal / window chrome","tags & labels on strings","handwritten list / checklist","ledger / table / spreadsheet rows","NO container - bleeds onto the page"],
+ TYPE:["one giant word per screen, oversized, overflowing the frame","serif display + monospace data, hard clash","vertical / rotated running text","kinetic type (letters move, bob, react)","ransom-note (mixed sizes/weights/styles per word)","variable-weight that thickens on scroll/hover","outline type + solid type interleaved","ALL-CAPS condensed poster type vs tiny captions"],
+ PALETTE:["strict duotone (2 colors only, no greys)","near-monochrome + one violently hot accent","intentional clash / 'ugly on purpose' but confident","black & white + a single spot color","risograph 2-spot overprint (offset, misregistered)","neon on near-black","paper cream + ink black, editorial","high-saturation tropical, no dark mode"],
+ ANOMALY:["everything tilted exactly 3 degrees","no horizontal lines anywhere - all edges curve or slant","only circles & arcs, zero rectangles","elements allowed to overflow & be clipped by the frame edge","a recurring hand-drawn mascot / scribble appears throughout","one element is ALWAYS moving / alive on every frame","perfect symmetry is forbidden - every pairing is uneven","a deliberate 'broken' glitch that is clearly intentional","scale play - one thing absurdly large or tiny vs the rest","one common color (e.g. blue) is banned from the whole piece"],
+ REFERENCE:["Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map","punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern design","tarot card / occult plate","hospital heart-rate monitor","vaporwave shopping mall directory","broadsheet newspaper front page","museum wall / gallery label","retro arcade cabinet / game UI"],
+ WILDCARD:["do the deliberate OPPOSITE of one rolled card","merge two cards from one deck into a single hybrid","let the creative-seed override the REFERENCE entirely","add a recurring mascot/character that reacts to the user","one section loudly BREAKS the ANOMALY law, on purpose","collapse it all into ONE uninterrupted scene, no sections","ban the most obvious color for this brand","smash a second LAYOUT into the first halfway through"]
+};
+const WEB=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
+const HE={LAYOUT:"פריסה",INTERACTION:"אינטראקציה",CONTAINER:"מיכל",TYPE:"טיפוגרפיה",PALETTE:"פלטה",ANOMALY:"חוק חריג",REFERENCE:"השראה",WILDCARD:"קלף פראי"};
+const BAN=["כרטיסים מעוגלים בשורה","ירו + 3 בלוקים סימטריים","אימוג'י או אייקון גנרי","כותרת+פסקה במרכז שחוזרת","עמודות שוות סימטריות","אותו עיגול פינות על הכל","לוק סטוק גנרי במרכז"];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const ticket=document.getElementById('ticket');
+function cook(){
+  let h='<div class="th">מנה שיצאה · ROLL [web]</div>';
+  WEB.forEach(k=>{h+=`<div class="trow"><span class="tk">${k} · ${HE[k]}</span><span class="tv">${pick(DECKS[k])}</span></div>`;});
+  h+=`<div class="tban">אסור: ${pick(BAN)}</div>`;
+  ticket.innerHTML=h;
+}
+cook();
+
+/* press & hold to cook (INTERACTION) */
+const btn=document.getElementById('cookbtn'),cover=document.getElementById('cover'),charge=document.getElementById('charge');
+let raf,start=null,done=false;const DUR=900;
+function frame(t){
+  if(start===null)start=t;
+  const p=Math.min(1,(t-start)/DUR);
+  charge.style.width=(p*100)+'%';
+  if(p>=1){finish();return;}
+  raf=requestAnimationFrame(frame);
+}
+function begin(e){e.preventDefault();if(done){reset();}btn.classList.add('hold');btn.textContent='מבשל...';start=null;raf=requestAnimationFrame(frame);}
+function finish(){done=true;cancelAnimationFrame(raf);cook();cover.classList.add('gone');ticket.classList.add('show');btn.classList.remove('hold');btn.textContent='בשל עוד מנה';charge.style.width='0';}
+function cancel(){if(done)return;cancelAnimationFrame(raf);charge.style.width='0';btn.classList.remove('hold');btn.textContent='לחץ והחזק';}
+function reset(){done=false;ticket.classList.remove('show');cover.classList.remove('gone');cover.innerHTML='מחמם...<small>תכף מוכן</small>';}
+btn.addEventListener('pointerdown',begin);
+btn.addEventListener('pointerup',cancel);
+btn.addEventListener('pointerleave',cancel);
+btn.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* copy / toast */
+const toast=document.getElementById('toast');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1900);}
+document.getElementById('copySkill').addEventListener('click',async()=>{
+  try{const r=await fetch('SKILL.md');const t=await r.text();await navigator.clipboard.writeText(t);showToast('SKILL.md הועתק ללוח');}
+  catch(e){const a=document.createElement('a');a.href='SKILL.md';a.download='SKILL.md';a.click();showToast('SKILL.md ירד');}
+});
+</script>
+</body>
+</html>

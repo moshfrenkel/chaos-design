@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>צד B — chaos-design</title>
+<meta name="description" content="המחשב הוא DJ שמנגן רק להיטים מוכרים. chaos-design מכריח אותו לנגן משהו שעוד לא שמעת. הורד את המחט, שמע מה יצא, וקח את הסקיל.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* roll obeyed: LAYOUT full-bleed kinetic TYPE · INTERACTION press-and-hold (drop the needle)
+   CONTAINER ledger/tracklist rows · TYPE kinetic + serif display × monospace data hard clash
+   PALETTE paper cream + ink black, editorial · ANOMALY scale play (one thing absurdly large/tiny)
+   REFERENCE 1970s vinyl record sleeve · WILDCARD creative-seed overrides reference (the set that refuses the expected hit) */
+:root{--paper:#EFE7D6;--ink:#171410;--dim:#6f6757;--line:#171410;
+  --serif:'Frank Ruhl Libre',serif;--body:'Heebo',sans-serif;--mono:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x:hidden;-webkit-text-size-adjust:100%}
+::selection{background:var(--ink);color:var(--paper)}
+.mono{font-family:var(--mono)}
+.sleeve{max-width:780px;margin:0 auto;padding:0 clamp(16px,5vw,44px)}
+.panel{padding:clamp(36px,8vw,80px) 0}
+.panel + .panel{border-top:2px solid var(--line)}
+
+/* editorial top strip */
+.strip{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-weight:700;
+  font-size:11.5px;padding:12px 0;border-bottom:2px solid var(--line)}
+.sidetag{font-family:var(--mono);font-weight:700;font-size:12px;border:2px solid var(--ink);padding:4px 12px;display:inline-block;margin-bottom:18px}
+
+/* kinetic serif display, scale play */
+.disp{font-family:var(--serif);font-weight:900;line-height:.82}
+.disp .l{display:inline-block;animation:sway 3.4s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(-.05em)}}
+.colossal{font-size:clamp(72px,28vw,260px)}      /* the absurdly large thing */
+.h2{font-size:clamp(36px,11vw,88px)}
+.tiny{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--dim)}  /* the absurdly tiny thing */
+.lead{font-family:var(--body);font-weight:300;font-size:clamp(17px,4.5vw,24px);line-height:1.5;max-width:32ch;margin-top:20px}
+.lead b{font-weight:700}
+
+/* hero: word + vinyl, scale clash */
+.hero{position:relative;display:grid;gap:6px}
+.hero .vinyl{position:absolute;left:-8%;top:8%;width:clamp(110px,34vw,260px);opacity:.9;animation:rot 14s linear infinite;z-index:-1}
+@keyframes rot{to{transform:rotate(360deg)}}
+.catrow{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--line);margin-top:24px;padding-top:10px}
+
+/* tracklist (CONTAINER ledger rows) */
+.tracks{font-family:var(--mono);margin-top:10px}
+.trk{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:baseline;
+  padding:13px 0;border-bottom:1px solid rgba(23,20,16,.28)}
+.trk .no{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--dim)}
+.trk .nm{font-family:var(--body);font-weight:700;font-size:clamp(15px,4vw,20px)}
+.trk .nm small{display:block;font-weight:300;font-size:13px;color:var(--dim);font-family:var(--body);margin-top:2px}
+.trk .tm{font-family:var(--mono);font-weight:700;font-size:13px}
+
+/* live demo: turntable, press & hold to drop the needle */
+#deck{text-align:center}
+.turn{position:relative;width:min(88vw,400px);margin:26px auto 0;aspect-ratio:1}
+.platter{position:absolute;inset:0;border-radius:50%;background:
+  repeating-radial-gradient(circle at 50% 50%, var(--ink) 0 1px, transparent 1px 4px);
+  border:3px solid var(--ink);transition:transform .3s}
+.platter.spin{animation:rot 2.2s linear infinite}
+.label{position:absolute;inset:30%;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  display:grid;place-items:center;padding:7%;z-index:2;overflow:hidden}
+.label .nowrap{opacity:0;transition:opacity .35s;text-align:start;width:100%}
+.label.show .nowrap{opacity:1}
+.label .lh{font-family:var(--mono);font-weight:700;font-size:9.5px;color:var(--dim);text-align:center;margin-bottom:5px}
+.label .lrow{display:flex;justify-content:space-between;gap:5px;font-size:8.7px;line-height:1.5}
+.label .lk{font-family:var(--mono);font-weight:700;color:var(--dim);white-space:nowrap}
+.label .lv{font-family:var(--body);font-weight:700;font-size:9.3px;text-align:start}
+.label .idle{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:900;
+  font-size:clamp(26px,8vw,42px);transition:opacity .3s}
+.label.show .idle{opacity:0}
+.arm{position:absolute;top:-3%;left:-3%;width:46%;transform-origin:88% 12%;transform:rotate(-26deg);
+  transition:transform .5s cubic-bezier(.5,1.4,.5,1);z-index:3}
+.arm.down{transform:rotate(2deg)}
+.ring{position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:4}
+.holdbtn{margin-top:24px;font-family:var(--serif);font-weight:900;font-size:clamp(20px,5.5vw,28px);
+  background:var(--ink);color:var(--paper);border:none;padding:14px 42px;cursor:pointer;user-select:none;
+  -webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s}
+.holdbtn.hold{transform:scale(.96)}
+.decknote{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:16px;line-height:1.6}
+
+/* take it */
+.path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3.2vw,15px);display:inline-block;
+  border:2px solid var(--ink);padding:9px 16px;margin:14px 0 26px}
+.acts{display:flex;flex-wrap:wrap;gap:14px}
+.btn{font-family:var(--mono);font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;
+  border:2px solid var(--ink);background:transparent;color:var(--ink);padding:13px 22px;transition:background .15s,color .15s,transform .12s}
+.btn:hover{background:var(--ink);color:var(--paper)}.btn:active{transform:translate(2px,2px)}
+.btn.solid{background:var(--ink);color:var(--paper)}.btn.solid:hover{opacity:.85}
+.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:30px 0;color:var(--ink)}
+.switch a{color:var(--ink);font-weight:700;text-decoration:underline}
+footer{background:var(--ink);color:var(--paper);text-align:center;padding:42px 20px;font-family:var(--mono);font-size:12px;line-height:1.8}
+footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,52px);display:block;margin-bottom:10px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-weight:700;font-size:13px;padding:13px 24px;z-index:99;transition:transform .35s}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){.disp .l,.vinyl,.platter.spin{animation:none}}
+</style>
+</head>
+<body>
+<div class="sleeve">
+
+  <!-- HERO -->
+  <section class="panel">
+    <div class="strip"><span>CHAOS-DESIGN</span><span>33⅓ RPM · גרסת ה-DJ</span></div>
+    <div class="hero">
+      <svg viewBox="0 0 100 100" class="vinyl" aria-hidden="true">
+        <circle cx="50" cy="50" r="48" fill="#171410"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
+        <circle cx="50" cy="50" r="32" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
+        <circle cx="50" cy="50" r="24" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
+        <circle cx="50" cy="50" r="15" fill="#EFE7D6"/><circle cx="50" cy="50" r="2" fill="#171410"/>
+      </svg>
+      <span class="sidetag">SIDE B · הצד שמסרב להיט</span>
+      <h1 class="disp colossal">צַד<br>בִּי</h1>
+      <p class="lead">המחשב הוא <b>DJ שמנגן רק להיטים</b> שכולם מכירים, כי זה בטוח. הכלי הזה מכריח אותו לנגן משהו שעוד לא שמעת. בכל פעם משהו טרי.</p>
+      <div class="catrow"><span class="tiny">CAT. NO. CHAOS-001</span><span class="tiny">A SKILL FOR CLAUDE CODE</span></div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM: side A, the same old hits -->
+  <section class="panel">
+    <span class="sidetag">SIDE A · אותם להיטים</span>
+    <h2 class="disp h2">כל DJ מנגן<br>אותו שיר</h2>
+    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:42ch">המחשב שולף תמיד את הלהיט הבטוח, הממוצע של כל מה ששמע. ולכן יוצא לך תמיד אותו דבר:</p>
+    <div class="tracks">
+      <div class="trk"><span class="no">A1</span><span class="nm">הכרטיס המעוגל</span><span class="tm">3:00</span></div>
+      <div class="trk"><span class="no">A2</span><span class="nm">האימוג'י העצלן</span><span class="tm">2:48</span></div>
+      <div class="trk"><span class="no">A3</span><span class="nm">הכותרת באמצע + 3 בלוקים</span><span class="tm">4:12</span></div>
+      <div class="trk"><span class="no">A4</span><span class="nm">אותם צבעים, אותו סידור</span><span class="tm">3:33</span></div>
+    </div>
+  </section>
+
+  <!-- THE METHOD: side B set list -->
+  <section class="panel">
+    <span class="sidetag">SIDE B · הסט החדש</span>
+    <h2 class="disp h2">חמישה<br>טראקים</h2>
+    <div class="tracks">
+      <div class="trk"><span class="no">B1</span><span class="nm">ניצוץ<small>זורקים רעיון מטורף מהחיים</small></span><span class="tm">0:30</span></div>
+      <div class="trk"><span class="no">B2</span><span class="nm">גלגול<small>הקובייה בוחרת סגנון, לא המחשב</small></span><span class="tm">0:45</span></div>
+      <div class="trk"><span class="no">B3</span><span class="nm">בנייה<small>בונים בדיוק לפי מה שיצא, בלי לרמות</small></span><span class="tm">2:10</span></div>
+      <div class="trk"><span class="no">B4</span><span class="nm">כללי הבית<small>רשימת אסור שאי אפשר לעבור</small></span><span class="tm">1:05</span></div>
+      <div class="trk"><span class="no">B5</span><span class="nm">טעימה<small>יצא רגיל? מתחילים מחדש</small></span><span class="tm">0:50</span></div>
+    </div>
+  </section>
+
+  <!-- LIVE DEMO: drop the needle -->
+  <section class="panel" id="deck">
+    <span class="sidetag">נסה בעצמך · אמיתי</span>
+    <h2 class="disp h2">הורד את<br>המחט</h2>
+    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:38ch;margin:12px auto 0">לחץ והחזק כדי להוריד את המחט על התקליט. כשהיא נוחתת, שומעים מה יצא. כל פעם טראק אחר.</p>
+    <div class="turn">
+      <div class="platter" id="platter"></div>
+      <div class="label" id="label"><div class="idle">?</div><div class="nowrap" id="nowrap"></div></div>
+      <svg viewBox="0 0 100 100" class="arm" id="arm" aria-hidden="true">
+        <circle cx="86" cy="14" r="7" fill="none" stroke="#171410" stroke-width="3"/>
+        <line x1="86" y1="14" x2="30" y2="74" stroke="#171410" stroke-width="4" stroke-linecap="round"/>
+        <rect x="24" y="70" width="12" height="9" fill="#171410" transform="rotate(46 30 74)"/>
+      </svg>
+      <svg viewBox="0 0 100 100" class="ring" id="ring"><circle cx="50" cy="50" r="48.5" fill="none" stroke="#171410" stroke-width="3" stroke-dasharray="305" stroke-dashoffset="305" transform="rotate(-90 50 50)"/></svg>
+    </div>
+    <button class="holdbtn" id="holdbtn">לחץ והחזק</button>
+    <p class="decknote mono">כל שליפה אחרת מהקודמת. אותה בקשה, טראק אחר בכל פעם.</p>
+  </section>
+
+  <!-- TAKE IT -->
+  <section class="panel" id="take">
+    <span class="sidetag">קח את התקליט</span>
+    <h2 class="disp h2">העתק. הדבק.<br>נגן בעצמך.</h2>
+    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:42ch">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
+    <span class="path">~/.claude/skills/chaos-design/</span>
+    <div class="acts">
+      <button class="btn solid" id="copySkill">העתק SKILL.md</button>
+      <a class="btn" href="SKILL.md" download>הורד SKILL.md</a>
+      <a class="btn" href="dice.py" download>הורד dice.py</a>
+    </div>
+    <p class="tiny" style="margin-top:22px">דורש גם את creative-seeds (טראק הפתיחה). אותה ערכה אנטי-AI.</p>
+  </section>
+
+  <p class="switch">בא לך לטעום את אותו רעיון במטבח אחר? <a href="chef.html">עבור לגרסת השף ←</a></p>
+</div>
+
+<footer>
+  <span class="fbig">תפסיק לנגן את אותו שיר.</span>
+  chaos-design · a Claude Code skill by Mosh Frenkel<br>
+  התקליט הזה הוקלט על ידי הסקיל עצמו
+</footer>
+
+<div class="toast" id="toast">הועתק</div>
+
+<script>
+const DECKS={
+ LAYOUT:["collage / overlapping torn pieces, intentional mess","hard diagonal grid (everything skewed on one axis)","scattered absolute 'playground' (objects float in space)","editorial spread with marginalia & pull-quotes in the gutter","full-bleed kinetic TYPE as the layout (words ARE the design)","radial / circular orbit around one center point","anarchic masonry (wildly unequal blocks, no rhythm)","spatial map / blueprint / floor-plan","brutal asymmetric split (70/30, one side invades the other)","horizontal sideways flow (a journey across a wall)"],
+ INTERACTION:["physics: drag & throw elements, they collide with walls","audio-reactive: generated sound drives the visuals","scroll-jack scenes that morph between fixed states","cursor-as-tool (marker / spotlight / magnet / eraser)","gyro / tilt parallax (phone movement moves the world)","press-and-hold to reveal / charge / unlock","draw-to-reveal (user paints content into view)","time-decay: elements mutate, rot, or grow over time","beat / pulse sync (everything breathes on one clock)","hover-distortion / liquid warp on contact"],
+ CONTAINER:["torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames","ticket stub / boarding pass","speech bubbles","terminal / window chrome","tags & labels on strings","handwritten list / checklist","ledger / table / spreadsheet rows","NO container - bleeds onto the page"],
+ TYPE:["one giant word per screen, oversized, overflowing the frame","serif display + monospace data, hard clash","vertical / rotated running text","kinetic type (letters move, bob, react)","ransom-note (mixed sizes/weights/styles per word)","variable-weight that thickens on scroll/hover","outline type + solid type interleaved","ALL-CAPS condensed poster type vs tiny captions"],
+ PALETTE:["strict duotone (2 colors only, no greys)","near-monochrome + one violently hot accent","intentional clash / 'ugly on purpose' but confident","black & white + a single spot color","risograph 2-spot overprint (offset, misregistered)","neon on near-black","paper cream + ink black, editorial","high-saturation tropical, no dark mode"],
+ ANOMALY:["everything tilted exactly 3 degrees","no horizontal lines anywhere - all edges curve or slant","only circles & arcs, zero rectangles","elements allowed to overflow & be clipped by the frame edge","a recurring hand-drawn mascot / scribble appears throughout","one element is ALWAYS moving / alive on every frame","perfect symmetry is forbidden - every pairing is uneven","a deliberate 'broken' glitch that is clearly intentional","scale play - one thing absurdly large or tiny vs the rest","one common color (e.g. blue) is banned from the whole piece"],
+ REFERENCE:["Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map","punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern design","tarot card / occult plate","hospital heart-rate monitor","vaporwave shopping mall directory","broadsheet newspaper front page","museum wall / gallery label","retro arcade cabinet / game UI"],
+ WILDCARD:["do the deliberate OPPOSITE of one rolled card","merge two cards from one deck into a single hybrid","let the creative-seed override the REFERENCE entirely","add a recurring mascot/character that reacts to the user","one section loudly BREAKS the ANOMALY law, on purpose","collapse it all into ONE uninterrupted scene, no sections","ban the most obvious color for this brand","smash a second LAYOUT into the first halfway through"]
+};
+const WEB=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
+const HE={LAYOUT:"פריסה",INTERACTION:"אינטראקציה",CONTAINER:"מיכל",TYPE:"טיפוגרפיה",PALETTE:"פלטה",ANOMALY:"חוק חריג",REFERENCE:"השראה",WILDCARD:"קלף פראי"};
+const BAN=["כרטיסים מעוגלים בשורה","ירו + 3 בלוקים סימטריים","אימוג'י או אייקון גנרי","כותרת+פסקה במרכז שחוזרת","עמודות שוות סימטריות","אותו עיגול פינות על הכל","לוק סטוק גנרי במרכז"];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const nowrap=document.getElementById('nowrap');
+function spin(){
+  let h='<div class="lh">NOW PLAYING</div>';
+  WEB.forEach(k=>{h+=`<div class="lrow"><span class="lk">${k}</span><span class="lv">${pick(DECKS[k])}</span></div>`;});
+  nowrap.innerHTML=h;
+}
+spin();
+
+/* press & hold = drop the needle (INTERACTION) */
+const btn=document.getElementById('holdbtn'),arm=document.getElementById('arm'),platter=document.getElementById('platter'),
+  label=document.getElementById('label'),ring=document.querySelector('#ring circle');
+const LEN=305;let raf,start=null,done=false;const DUR=950;
+function frame(t){if(start===null)start=t;const p=Math.min(1,(t-start)/DUR);
+  ring.style.strokeDashoffset=LEN*(1-p);
+  if(p>=1){finish();return;}raf=requestAnimationFrame(frame);}
+function begin(e){e.preventDefault();if(done)reset();btn.classList.add('hold');btn.textContent='מוריד מחט...';
+  arm.classList.add('down');platter.classList.add('spin');start=null;raf=requestAnimationFrame(frame);}
+function finish(){done=true;cancelAnimationFrame(raf);spin();label.classList.add('show');
+  btn.classList.remove('hold');btn.textContent='נגן טראק חדש';}
+function cancel(){if(done){btn.textContent='נגן טראק חדש';return;}cancelAnimationFrame(raf);ring.style.strokeDashoffset=LEN;
+  arm.classList.remove('down');platter.classList.remove('spin');btn.classList.remove('hold');btn.textContent='לחץ והחזק';}
+function reset(){done=false;label.classList.remove('show');ring.style.strokeDashoffset=LEN;}
+btn.addEventListener('pointerdown',begin);
+btn.addEventListener('pointerup',cancel);
+btn.addEventListener('pointerleave',cancel);
+btn.addEventListener('contextmenu',e=>e.preventDefault());
+
+const toast=document.getElementById('toast');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1900);}
+document.getElementById('copySkill').addEventListener('click',async()=>{
+  try{const r=await fetch('SKILL.md');const t=await r.text();await navigator.clipboard.writeText(t);showToast('SKILL.md הועתק ללוח');}
+  catch(e){const a=document.createElement('a');a.href='SKILL.md';a.download='SKILL.md';a.click();showToast('SKILL.md ירד');}
+});
+</script>
+</body>
+</html>

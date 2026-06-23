@@ -95,6 +95,10 @@
   button.take:active{transform:translateY(1px)}
   .install{margin-top:16px;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.9;color:var(--grn-mid);text-align:right}
   .install code{color:var(--grn)}
+  .tip{margin-top:20px;text-align:right;border-right:3px solid var(--grn);padding:10px 14px;background:#0a160d}
+  .tip .lab{font-family:'Courier Prime',monospace;font-size:11px;color:var(--grn-mid);font-weight:700;display:block;margin-bottom:6px}
+  .tip p{font-size:14px;line-height:1.5;color:#d6ffc6}
+  .tip b{color:var(--grn);background:rgba(116,255,69,.12);padding:0 4px;font-weight:800}
   .metaline{margin-top:22px;font-family:'Courier Prime',monospace;font-size:11px;color:var(--grn-mid);line-height:1.6}
 
   .toast{position:fixed;top:-60px;left:50%;transform:translateX(-50%);background:var(--grn);color:var(--bg);
@@ -213,6 +217,12 @@
         <div>$ <code>mv SKILL.md dice.py ~/.claude/skills/chaos-design/</code></div>
         <div>$ <code>python ~/.claude/skills/chaos-design/dice.py</code></div>
       </div>
+
+      <div class="tip">
+        <span class="lab">// הדרך הכי קלה, גם בלי להבין קוד</span>
+        <p>לחץ <b>העתק</b> על שני הקבצים, הדבק אותם לקלוד בצ'אט, ובקש: <b>"תתאים לי את הכלי הזה אישית, לפי מה שאני עושה"</b>. הוא יערוך את הקובייה לעולם שלך, ויסביר לך איך להפעיל אותה.</p>
+      </div>
+
       <p class="metaline">לאורך כל הדף המרכז נשאר ריק בכוונה. רק עכשיו הוא מתמלא. גם זה היה בקובייה.</p>
     </div>
   </section>

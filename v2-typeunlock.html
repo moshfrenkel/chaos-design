@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>תכתוב. תעצור. תראה.</title>
+<meta name="description" content="מנוע כאוס שמפעיל כאוס על עצמו. כתוב מה בא לך לעצב, עצור, וקבל שלד חי. ואז קח את הסקיל.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800;900&family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c0d;        /* color 1 */
+    --acid:#d7ff34;      /* color 2 — the only other color. strict duotone. */
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  html,body{background:var(--bg);color:var(--acid);overflow-x:hidden}
+  body{font-family:'Heebo',sans-serif;min-height:100vh;position:relative}
+  .anton{font-family:'Anton',sans-serif;font-weight:400}
+  .mono{font-family:'Courier Prime',monospace}
+  ::selection{background:var(--acid);color:var(--bg)}
+
+  /* ===== handmade-line filter: nothing is geometrically perfect (ANOMALY) ===== */
+  .defs{position:absolute;width:0;height:0}
+  .rough{filter:url(#rough)}
+
+  /* one uninterrupted scene (WILDCARD: no sections) */
+  #scene{position:relative;width:100%;min-height:100vh;padding:18px 14px 140px;z-index:2}
+
+  /* strings layer behind pinned items */
+  #strings{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible}
+  #strings path{stroke:var(--acid);stroke-width:1.4;fill:none;opacity:.55}
+
+  /* memphis 80s doodles, handmade, duotone, low priority */
+  #doodles{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.5}
+
+  /* ----- HERO: giant numerals dominate, words are footnotes (TYPE) ----- */
+  .kick{font-family:'Courier Prime',monospace;font-weight:700;font-size:12px;letter-spacing:1px;opacity:.8}
+  .kick u{text-decoration-thickness:2px;text-underline-offset:3px}
+  #bignum{
+    font-family:'Anton',sans-serif;line-height:.82;letter-spacing:-.01em;
+    font-size:clamp(52px,19vw,230px);
+    word-break:break-all;margin:.04em 0 0;
+    text-shadow:4px 5px 0 rgba(215,255,52,.18);
+  }
+  .foot{font-size:clamp(13px,3.6vw,16px);max-width:30ch;font-weight:700;line-height:1.35;margin-top:8px}
+  .foot small{display:block;font-weight:400;opacity:.7;font-size:12px;margin-top:4px}
+
+  /* ----- the type-to-unlock prompt (INTERACTION) ----- */
+  #ask{position:relative;margin:26px 0 8px;max-width:560px}
+  .ask-label{font-family:'Courier Prime',monospace;font-weight:700;font-size:14px;display:block;margin-bottom:8px}
+  .ask-label b{background:var(--acid);color:var(--bg);padding:1px 6px}
+  .inputwrap{position:relative}
+  #brief{
+    width:100%;background:transparent;color:var(--acid);border:none;outline:none;
+    font-family:'Anton',sans-serif;font-size:clamp(22px,7vw,40px);line-height:1.1;
+    padding:6px 2px 12px;caret-color:var(--acid);resize:none;overflow:hidden;min-height:1.4em
+  }
+  #brief::placeholder{color:var(--acid);opacity:.32}
+  .underline-svg{display:block;width:100%;height:14px;margin-top:-6px}
+  .hint{font-family:'Courier Prime',monospace;font-size:12px;opacity:.7;margin-top:10px;min-height:1.4em}
+  .hint b{color:var(--bg);background:var(--acid);padding:0 5px}
+
+  /* counter footnote */
+  #count{font-family:'Courier Prime',monospace;font-size:12px;margin-top:6px;opacity:.85}
+  #count b{font-family:'Anton';font-size:18px}
+
+  /* ----- pinned cards on the board (NO container — bleeds; pin + scribble only) ----- */
+  #board{position:relative;margin-top:30px;min-height:60px}
+  .pin{
+    position:relative;display:block;margin:0 0 26px;padding-right:34px;max-width:520px;
+    opacity:0;transform:translateY(14px);transition:opacity .45s, transform .45s;
+  }
+  .pin.show{opacity:1;transform:none}
+  .pin .tack{position:absolute;right:2px;top:-4px;width:26px;height:26px}
+  .pin .axis{font-family:'Courier Prime',monospace;font-weight:700;font-size:11px;letter-spacing:1px;opacity:.7;display:block}
+  .pin .val{font-family:'Anton',sans-serif;font-size:clamp(18px,5.4vw,30px);line-height:1.02;display:inline}
+  .pin .scribble{display:block;width:100%;max-width:340px;height:12px;margin-top:2px}
+  .pin.brief-pin .val{font-size:clamp(22px,6.6vw,38px)}
+  .pin.brief-pin .axis{color:var(--bg);background:var(--acid);padding:1px 6px}
+
+  /* ----- the vault (seed #12: opens when you stop knocking / type) ----- */
+  #vault{position:relative;margin:54px 0 0;max-width:560px}
+  #vault .lockwrap{display:flex;align-items:flex-start;gap:14px}
+  #vault svg.lock{width:60px;height:74px;flex:0 0 auto;transition:transform .4s}
+  #vault.open svg.lock{transform:rotate(-8deg)}
+  #vault .vt{flex:1}
+  #vault .vt h2{font-family:'Anton';font-size:clamp(26px,8vw,46px);line-height:.92}
+  #vault .vt p{font-size:13px;opacity:.8;margin-top:6px;max-width:34ch;line-height:1.45}
+  .grab{margin-top:18px;display:none}
+  #vault.open .grab{display:block}
+  .grab .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+  .grab .fn{font-family:'Anton';font-size:clamp(20px,6vw,30px)}
+  .grab .fn small{font-family:'Heebo';font-weight:400;font-size:12px;opacity:.7;display:block;letter-spacing:0}
+  button.take{
+    cursor:pointer;font-family:'Courier Prime',monospace;font-weight:700;font-size:14px;
+    background:var(--acid);color:var(--bg);border:none;padding:11px 16px;position:relative
+  }
+  button.take.ghost{background:transparent;color:var(--acid)}
+  button.take.ghost .bd{position:absolute;inset:0;width:100%;height:100%}
+  button.take:active{transform:translateY(1px)}
+  .install{margin-top:8px;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.9;opacity:.8}
+  .install code{background:var(--acid);color:var(--bg);padding:1px 5px}
+
+  .lockedmsg{font-family:'Courier Prime',monospace;font-size:13px;opacity:.85;margin-top:10px}
+
+  footer{position:relative;z-index:2;font-family:'Courier Prime',monospace;font-size:11px;opacity:.55;
+    padding:30px 14px 40px;max-width:560px;line-height:1.7}
+
+  .toast{position:fixed;top:-60px;left:50%;transform:translateX(-50%);background:var(--acid);color:var(--bg);
+    font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;padding:10px 16px;z-index:40;
+    transition:top .25s}
+  .toast.show{top:18px}
+
+  @media (min-width:760px){
+    #scene{padding:34px 40px 160px}
+    .pin{margin-bottom:34px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .pin{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- handmade roughen filter + reusable defs -->
+<svg class="defs" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+    </filter>
+  </defs>
+</svg>
+
+<svg id="doodles" class="rough" aria-hidden="true" preserveAspectRatio="none"></svg>
+<svg id="strings" class="rough" aria-hidden="true" preserveAspectRatio="none"></svg>
+
+<main id="scene">
+  <p class="kick">מנוע כאוס · <u>מפעיל את עצמו</u></p>
+
+  <div id="bignum" aria-label="עשרים ותשעה מיליארד שלדים אפשריים">0</div>
+  <p class="foot">שלדים שונים שהמנוע יכול לבנות מ<span style="white-space:nowrap">אותו בריף</span>.
+    <small>12 חפיסות · 20+ קלפים כל אחת · בלי לחזור על עצמו. תבנית אחת לא תשרוד פה.</small>
+  </p>
+
+  <!-- type-to-unlock -->
+  <section id="ask" aria-label="כתוב בריף">
+    <label class="ask-label" for="brief">כתוב מה בא לך לעצב <b>ותעצור</b>. המנוע עונה כשמפסיקים להקליד.</label>
+    <div class="inputwrap">
+      <textarea id="brief" rows="1" placeholder="אתר לסטודיו תנועה לילדים..." autocomplete="off"></textarea>
+      <svg class="underline-svg rough" viewBox="0 0 400 14" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2 8 C 80 3, 150 12, 220 6 S 360 4, 398 9" stroke="#d7ff34" stroke-width="2.4" fill="none"/>
+      </svg>
+    </div>
+    <p class="hint" id="hint" aria-live="polite">תקליד משהו... ותוריד את האצבע.</p>
+    <p id="count">שלדים שגלגלת: <b id="countn">0</b></p>
+  </section>
+
+  <!-- pinned scaffold appears here -->
+  <div id="board" aria-live="polite"></div>
+
+  <!-- the vault -->
+  <section id="vault" aria-label="קח את הסקיל">
+    <div class="lockwrap">
+      <svg class="lock rough" viewBox="0 0 60 74" fill="none" stroke="#d7ff34" stroke-width="2.6" stroke-linecap="round" aria-hidden="true">
+        <path class="shackle" d="M14 32 V22 C14 10 46 10 46 22 V32" />
+        <path d="M8 32 H52 C53 32 54 33 54 34 V68 C54 69 53 70 52 70 H8 C7 70 6 69 6 68 V34 C6 33 7 32 8 32 Z"/>
+        <path class="keyhole" d="M30 46 v10" />
+        <circle cx="30" cy="44" r="3"/>
+      </svg>
+      <div class="vt">
+        <h2 id="vaulth">הסקיל נעול.</h2>
+        <p id="vaultp">גלגל פעם אחת (תכתוב בריף למעלה ותעצור). אי אפשר לפרוץ אותו בלחיצות, רק בלעשות. כמו דלת שנפתחת רק כשמפסיקים לדפוק.</p>
+        <p class="lockedmsg" id="lockedmsg"></p>
+
+        <div class="grab" id="grab">
+          <div class="row">
+            <span class="fn">SKILL.md<small>השיטה: מתי, איך מגלגלים, חמשת השלבים, שער ה-self-audit</small></span>
+            <button class="take" data-dl="skill">הורד</button>
+            <button class="take ghost" data-copy="skill"><svg class="bd rough" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M3 5 H97 V35 H3 Z" stroke="#d7ff34" stroke-width="3" fill="none"/></svg>העתק</button>
+          </div>
+          <div class="row">
+            <span class="fn">dice.py<small>הקובייה: כל החפיסות, ה-ban-list, ההגרלה לכל מדיום</small></span>
+            <button class="take" data-dl="dice">הורד</button>
+            <button class="take ghost" data-copy="dice"><svg class="bd rough" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M3 5 H97 V35 H3 Z" stroke="#d7ff34" stroke-width="3" fill="none"/></svg>העתק</button>
+          </div>
+          <div class="install">
+            <div>$ <code>mkdir -p ~/.claude/skills/chaos-design</code></div>
+            <div>$ <code>mv SKILL.md dice.py ~/.claude/skills/chaos-design/</code></div>
+            <div>$ <code>python ~/.claude/skills/chaos-design/dice.py web</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  הדף הזה בנה את עצמו. הקובייה גולגלה ויצא: corkboard+strings · type-to-unlock · no-container · giant-numerals · strict-duotone · handmade-lines · memphis · one-scene. שום קלף לא נבחר ביד.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== the expanded web decks (mirror of dice.py) ===== */
+const DECKS={
+  LAYOUT:["collage / torn pieces","hard diagonal grid","scattered playground","editorial + marginalia","full-bleed kinetic type","radial orbit","anarchic masonry","spatial map / blueprint","brutal 70/30 split","horizontal sideways flow","single column to one side","staircase cascade","layered z-stack","timeline top-to-bottom","split-screen hard seam","exploded diagram","corkboard with strings","fold-out accordion","one giant object, captions orbit","grid that breaks down"],
+  INTERACTION:["physics: drag & throw","audio-reactive","scroll-jack morph","cursor-as-tool","gyro / tilt parallax","press-and-hold reveal","draw-to-reveal","time-decay mutate","beat / pulse sync","hover liquid warp","type-to-unlock","climb/step scroll, counted","shake to re-roll","flashlight reveal","stack-and-collapse","toggle inverts the world","reveal gated by a question","magnet cursor","pull-to-tear the page","live click-census"],
+  CONTAINER:["torn paper edges","sticky notes taped","polaroid frames","ticket stub","speech bubbles","terminal chrome","tags on strings","handwritten checklist","ledger rows","NO container - bleeds","library index cards","sealed envelopes","price tags / paddles","film-strip frames","wax-sealed scrolls","specimen jars","cut-out coupon","chalkboard panels","perforated receipts","picture-frame mats","manila dossier tabs"],
+  TYPE:["one giant word","serif + mono clash","vertical / rotated","kinetic letters","ransom-note mix","variable-weight on scroll","outline + solid","ALL-CAPS vs tiny captions","hand-lettered marker","type on a curved path","censored / redacted","typewriter ledger figures","justified solid mass","huge numerals, words as footnotes","letterpress emboss","stencil / spray","colliding kerning chaos","mirrored / reversed","annotated museum labels","Hebrew display vs Latin mono"],
+  PALETTE:["strict duotone","near-mono + hot accent","ugly on purpose","b&w + one spot","risograph overprint","neon on near-black","cream + ink editorial","high-sat tropical","sepia archive","blueprint cyan on navy","newsprint grey + red stamp","green phosphor terminal","pastel + acid accent","metallic on matte","thermal-receipt black","chalk on blackboard","infrared heat-map","clay earth + ochre","photocopy grayscale","two clashing brights"],
+  ANOMALY:["tilted exactly 3°","no horizontal lines","only circles & arcs","overflow & clip frame","recurring mascot","one element always moving","symmetry forbidden","intentional glitch","absurd scale play","one color banned","hard-aligned, vast void","one element breaks the grid","hidden until unlocked","a census of your actions","center stays empty","every corner torn","one hard offset shadow","whispered confession in margins","only handmade lines","an 'out of order' dead-zone"],
+  REFERENCE:["Swiss protest poster","1970s vinyl sleeve","subway map","punk zine","ransom note","Memphis / 80s postmodern","tarot plate","heart-rate monitor","vaporwave mall directory","broadsheet newspaper","museum label","arcade cabinet UI","botanical field-guide","passport stamp page","seed-packet label","ticker board","elevator inspection cert","cassette J-card","fight poster","architectural blueprint","lost-and-found corkboard","board-game box"],
+  WILDCARD:["OPPOSITE of one card","merge two into a hybrid","seed overrides REFERENCE","mascot reacts to user","one section breaks the ANOMALY","collapse to ONE scene","ban the obvious color","smash a 2nd LAYOUT halfway","hand a deck's job to another","build the card you fear","first action re-rolls an axis","make REFERENCE absurdly literal","a rule you must earn past","hide a confession in it","price everything as a motif","invert the medium's convention","a foreign REFERENCE crashes in","the piece counts the visitor","double-ANOMALY","strip all color, then flood it"]
+};
+const ORDER=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ===== giant number count-up (TYPE: numerals dominate) ===== */
+const TARGET=29568000000;
+const bignum=document.getElementById('bignum');
+(function(){
+  let t0=null, dur=2200;
+  function fmt(n){return Math.floor(n).toLocaleString('en-US');}
+  function step(ts){
+    if(!t0)t0=ts;
+    const p=Math.min(1,(ts-t0)/dur);
+    const eased=1-Math.pow(1-p,3);
+    bignum.textContent=fmt(TARGET*eased);
+    if(p<1)requestAnimationFrame(step);
+    else bignum.textContent=fmt(TARGET);
+  }
+  requestAnimationFrame(step);
+})();
+
+/* ===== handmade doodles (memphis, duotone) ===== */
+(function doodle(){
+  const s=document.getElementById('doodles');
+  const W=window.innerWidth, H=Math.max(document.body.scrollHeight, window.innerHeight*2);
+  s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const acid='#d7ff34';
+  let p='';
+  function rint(a,b){return a+Math.random()*(b-a);}
+  // squiggles
+  for(let i=0;i<7;i++){
+    const x=rint(0,W), y=rint(120,H-80);
+    p+=`<path d="M${x} ${y} q 14 -16 28 0 t 28 0 t 28 0" stroke="${acid}" stroke-width="2" fill="none"/>`;
+  }
+  // zigzags
+  for(let i=0;i<5;i++){
+    const x=rint(0,W-100), y=rint(120,H-80);
+    p+=`<path d="M${x} ${y} l 16 -14 l 16 14 l 16 -14 l 16 14" stroke="${acid}" stroke-width="2" fill="none"/>`;
+  }
+  // concentric arcs
+  for(let i=0;i<5;i++){
+    const x=rint(0,W), y=rint(120,H-80);
+    p+=`<path d="M${x-22} ${y} a 22 22 0 0 1 44 0 M${x-12} ${y} a 12 12 0 0 1 24 0" stroke="${acid}" stroke-width="2" fill="none"/>`;
+  }
+  // triangles outline
+  for(let i=0;i<6;i++){
+    const x=rint(0,W-40), y=rint(120,H-80), r=rint(12,26);
+    p+=`<path d="M${x} ${y-r} L${x+r} ${y+r} L${x-r} ${y+r} Z" stroke="${acid}" stroke-width="2" fill="none"/>`;
+  }
+  // small dots
+  for(let i=0;i<26;i++){ p+=`<circle cx="${rint(0,W)}" cy="${rint(120,H-60)}" r="2.4" fill="${acid}"/>`; }
+  s.innerHTML=p;
+})();
+
+/* ===== type-to-unlock engine ===== */
+const brief=document.getElementById('brief');
+const hint=document.getElementById('hint');
+const board=document.getElementById('board');
+const countn=document.getElementById('countn');
+const stringsSvg=document.getElementById('strings');
+const vault=document.getElementById('vault');
+let rolls=0, idleTimer=null, lastBrief='';
+
+// autosize textarea
+function autosize(){brief.style.height='auto';brief.style.height=brief.scrollHeight+'px';}
+brief.addEventListener('input',()=>{
+  autosize();
+  hint.innerHTML='הקלד... <b>תעצור</b> כדי לגלגל.';
+  clearTimeout(idleTimer);
+  const v=brief.value.trim();
+  if(v.length>1){
+    idleTimer=setTimeout(()=>fire(v),650); // seed #12: opens when you STOP
+  }
+});
+brief.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && !e.shiftKey){e.preventDefault();const v=brief.value.trim();if(v.length>1){clearTimeout(idleTimer);fire(v);}}
+});
+
+function tackSVG(){return `<svg class="tack rough" viewBox="0 0 26 26" fill="none" stroke="#d7ff34" stroke-width="2" aria-hidden="true"><circle cx="13" cy="9" r="6"/><path d="M13 15 V24" stroke-linecap="round"/></svg>`;}
+function scribbleSVG(){
+  const w=300+Math.random()*40;
+  return `<svg class="scribble rough" viewBox="0 0 ${w} 12" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7 C 60 2, 120 11, 180 5 S ${w-40} 3, ${w-2} 8" stroke="#d7ff34" stroke-width="2" fill="none"/></svg>`;
+}
+
+function fire(v){
+  if(v===lastBrief && rolls>0){ /* allow re-roll anyway */ }
+  lastBrief=v;
+  rolls++; countn.textContent=rolls;
+  hint.innerHTML='המנוע ענה. למטה זה השלד <b>שלך</b>. תעצור על משהו אחר כדי לגלגל שוב.';
+  // build roll
+  const roll={}; ORDER.forEach(k=>roll[k]=rnd(DECKS[k]));
+  let mut=null;
+  if(Math.random()<0.5){const k=rnd(ORDER.filter(a=>a!=='WILDCARD'));mut=`DOUBLE ${k}: + '${rnd(DECKS[k])}'`;}
+
+  // wipe & rebuild board
+  board.innerHTML='';
+  // the user's brief pinned first
+  const bp=document.createElement('div');
+  bp.className='pin brief-pin'; bp.dataset.node='brief';
+  bp.innerHTML=`${tackSVG()}<span class="axis">הבריף שלך</span><span class="val">"${escapeHtml(v)}"</span>${scribbleSVG()}`;
+  board.appendChild(bp);
+  // each rolled card pinned
+  const order=mut?[...ORDER,'MUTATION']:ORDER;
+  order.forEach((k,i)=>{
+    const val=k==='MUTATION'?mut:roll[k];
+    const el=document.createElement('div');
+    el.className='pin'; el.dataset.node='c'+i;
+    el.style.marginRight=(Math.random()*46)+'px'; // uneven, handmade
+    el.innerHTML=`${tackSVG()}<span class="axis">${k}</span><span class="val">${escapeHtml(val)}</span>${scribbleSVG()}`;
+    board.appendChild(el);
+  });
+  // reveal staggered + draw strings
+  const pins=[...board.querySelectorAll('.pin')];
+  pins.forEach((p,i)=>setTimeout(()=>{p.classList.add('show'); drawStrings();},90*i));
+  setTimeout(drawStrings,90*pins.length+120);
+
+  // unlock the vault on first roll (seed #12: it opened because you DID, not knocked)
+  if(rolls===1) openVault();
+  // re-place doodles height may have changed
+  setTimeout(()=>{drawStrings();},500);
+}
+
+function drawStrings(){
+  const briefPin=board.querySelector('.brief-pin');
+  if(!briefPin){stringsSvg.innerHTML='';return;}
+  const W=window.innerWidth, H=Math.max(document.body.scrollHeight, window.innerHeight);
+  stringsSvg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const br=briefPin.querySelector('.tack').getBoundingClientRect();
+  const sy=window.scrollY, sx=window.scrollX;
+  const ax=br.left+sx+br.width/2, ay=br.top+sy+br.height/2;
+  let p='';
+  board.querySelectorAll('.pin:not(.brief-pin)').forEach(pin=>{
+    const t=pin.querySelector('.tack').getBoundingClientRect();
+    const bx=t.left+sx+t.width/2, by=t.top+sy+t.height/2;
+    const mx=(ax+bx)/2+(Math.random()*40-20), my=(ay+by)/2+(Math.random()*30-15);
+    p+=`<path d="M${ax} ${ay} Q ${mx} ${my} ${bx} ${by}"/>`;
+  });
+  stringsSvg.innerHTML=p;
+}
+window.addEventListener('resize',()=>{drawStrings();});
+window.addEventListener('scroll',()=>{},{passive:true});
+
+function openVault(){
+  vault.classList.add('open');
+  document.getElementById('vaulth').textContent='פתוח. קח אותו.';
+  document.getElementById('vaultp').textContent='גלגלת. עכשיו הסקיל שלך: שני קבצים בתיקיית הסקילים, וכל בקשת עיצוב מגלגלת קובייה לפני שהיא בונה.';
+  document.getElementById('lockedmsg').textContent='';
+  const sh=vault.querySelector('.shackle'); if(sh) sh.setAttribute('d','M14 32 V18 C14 6 44 4 48 16');
+}
+
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ===== take the skill: fetch real sibling files, fallback embedded ===== */
+const FNAME={skill:"SKILL.md",dice:"dice.py"};
+const FALLBACK={
+skill:"# Chaos Design\\n\\nRun creative-seeds, then: python dice.py <medium>. Obey the roll. Ban-list is law. Self-audit >= 8/10.\\n(Full file: download from the live page.)",
+dice:"# chaos-design dice — download the full dice.py from the live page (fetch failed offline)."
+};
+async function getFile(key){
+  try{const r=await fetch(FNAME[key],{cache:'no-store'});if(r.ok)return await r.text();}catch(e){}
+  return FALLBACK[key];
+}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+document.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',async()=>{
+  const key=b.dataset.dl, text=await getFile(key);
+  const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download=FNAME[key];document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);toast('הורד: '+FNAME[key]);
+}));
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
+  const key=b.dataset.copy, text=await getFile(key);
+  try{await navigator.clipboard.writeText(text);toast('הועתק: '+FNAME[key]);}
+  catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('הועתק: '+FNAME[key]);}
+}));
+
+/* blink the caret hint until first interaction */
+let blink=true;setTimeout(function loop(){if(rolls>0)return;blink=!blink;hint.style.opacity=blink?'.7':'.3';setTimeout(loop,600);},600);
+brief.addEventListener('focus',()=>{hint.style.opacity='.7'});
+</script>
+</body>
+</html>

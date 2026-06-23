@@ -2,768 +2,290 @@
 <html dir="rtl" lang="he">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>חֲפִיסַת הַכָּאוֹס — chaos-design</title>
-<meta name="description" content="המחשב הוא שף שמכין כל יום אותה מנה. chaos-design נכנס לו למטבח ומכריח אותו להמציא משהו חדש. שלוף קלף, ראה איך זה עובד, וקח את המתכון אליך.">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>למה כל מה ש-AI מעצב נראה אותו דבר</title>
+<meta name="description" content="הסבר פשוט: כלי קטן שמכריח בינה מלאכותית להפסיק לחזור על עצמה בעיצוב. הדף הזה עוצב על ידו, וזו ההוכחה.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800;900&family=Oswald:wght@500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ====== roll obeyed ======
-   LAYOUT      full-bleed kinetic TYPE (words ARE the design)
-   INTERACTION draw-to-reveal  ×  time-decay  (WILDCARD hybrid, one deck)
-   CONTAINER   MUTED — grouping carried by type-scale + circular orbits
-   TYPE        serif display (Frank Ruhl Libre) × monospace data (Space Mono), hard clash
-   PALETTE     high-saturation tropical, NO dark mode
-   ANOMALY     only circles & arcs, zero rectangles
-   REFERENCE   tarot card / occult plate
-======================================= */
+  :root{
+    --bg:#06100a;
+    --grn:#74ff45;       /* phosphor green */
+    --grn-mid:#2f6e26;
+    --grn-dim:#163d16;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{background:var(--bg);color:var(--grn);overflow-x:hidden}
+  body{font-family:'Heebo',sans-serif}
+  ::selection{background:var(--grn);color:var(--bg)}
+  .caps{font-family:'Oswald',sans-serif;letter-spacing:.04em}   /* latin only */
+  .mono{font-family:'Courier Prime',monospace}
 
-:root{
-  --paper:#F8E2A8;        /* tropical sun cream */
-  --paper2:#FBEFC8;
-  --ink:#231307;          /* warm near-black */
-  --hibiscus:#E5167B;
-  --jade:#018F6F;
-  --tangerine:#FF5A1F;
-  --ultramarine:#2A2BD6;
-  --papaya:#FFB23E;
-  --serif:'Frank Ruhl Libre',serif;
-  --body:'Heebo',sans-serif;
-  --mono:'Space Mono','Heebo',monospace;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  background:var(--paper);color:var(--ink);font-family:var(--body);
-  overflow-x:hidden;-webkit-text-size-adjust:100%;
-}
-::selection{background:var(--hibiscus);color:var(--paper2)}
-.mono{font-family:var(--mono);font-weight:400}
-section{position:relative;padding:clamp(64px,12vw,140px) clamp(20px,6vw,90px);overflow:hidden}
+  /* ===== fixed CRT/ticker/grid backdrop ===== */
+  .defs{position:fixed;width:0;height:0}
+  #gridbg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.5}
+  #scan{position:fixed;inset:0;z-index:5;pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.22) 2px 3px);
+    mix-blend-mode:multiply}
+  #vignette{position:fixed;inset:0;z-index:4;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%)}
 
-/* ---- shared circular kit (ANOMALY: circles & arcs only) ---- */
-.disc{border-radius:50%;display:grid;place-items:center;text-align:center;line-height:1}
-.eyebrow{font-family:var(--mono);font-size:clamp(11px,2.6vw,14px);font-weight:700;
-  letter-spacing:.14em;opacity:.85}
-.eyebrow.he{letter-spacing:0}
-.huge{font-family:var(--serif);font-weight:900;line-height:.86;letter-spacing:0}
-.lead{font-family:var(--body);font-weight:300;font-size:clamp(17px,4.4vw,24px);
-  line-height:1.55;max-width:34ch}
+  /* ticker tapes at top & bottom edges (center stays empty - ANOMALY) */
+  .ticker{position:fixed;left:0;right:0;z-index:6;height:30px;overflow:hidden;
+    background:#040b06;border-block:1px solid var(--grn-dim);display:flex;align-items:center}
+  .ticker.top{top:0}.ticker.bot{bottom:0}
+  .tk-track{display:inline-flex;white-space:nowrap;will-change:transform;animation:tk 28s linear infinite}
+  .ticker.bot .tk-track{animation-duration:36s;animation-direction:reverse}
+  @keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .tk-item{font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;padding:0 18px;display:inline-flex;gap:7px;align-items:center;letter-spacing:.5px}
+  .tk-item .v{opacity:.65}
+  .tk-item svg{width:9px;height:9px}
 
-/* circular / arc CTA */
-.cta{display:inline-grid;place-items:center;border-radius:50%;cursor:pointer;
-  font-family:var(--mono);font-weight:700;border:none;text-decoration:none;
-  transition:transform .25s, box-shadow .25s;-webkit-tap-highlight-color:transparent}
-.cta:active{transform:scale(.94)}
-.pill{display:inline-flex;align-items:center;gap:10px;border-radius:999px;cursor:pointer;
-  font-family:var(--mono);font-weight:700;border:2.5px solid var(--ink);background:transparent;
-  color:var(--ink);padding:13px 24px;font-size:14px;text-decoration:none;
-  transition:background .2s,color .2s,transform .2s}
-.pill:active{transform:scale(.95)}
-.pill:hover{background:var(--ink);color:var(--paper)}
+  /* ===== scenes: scroll-snap fixed states (INTERACTION) ===== */
+  main{position:relative;z-index:2}
+  .scene{min-height:100svh;scroll-snap-align:start;position:relative;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:52px 18px 56px}            /* leave room for ticker tapes */
+  html{scroll-snap-type:y proximity}
+  /* edge zones; center deliberately empty */
+  .top-zone{max-width:640px}
+  .bot-zone{max-width:680px;margin-top:auto}
 
-/* =================== 1. THE PLATE (hero) =================== */
-#plate{min-height:100svh;display:grid;place-items:center;
-  background:radial-gradient(circle at 50% 42%, var(--paper2) 0%, var(--paper) 55%, #F2C766 100%)}
-.ringwrap{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
-.spin{animation:spin 60s linear infinite}
-.spin.rev{animation-direction:reverse;animation-duration:90s}
-@keyframes spin{to{transform:rotate(360deg)}}
-.zodiac{position:absolute;width:min(96vw,720px);aspect-ratio:1}
-.zodiac text{font-family:var(--mono);font-weight:700;font-size:15px;fill:var(--ink);opacity:.55}
-.plate-core{position:relative;z-index:3;text-align:center;padding:0 4vw}
-.plate-core .kicker{font-family:var(--mono);font-weight:700;font-size:clamp(11px,3vw,15px);
-  color:var(--hibiscus)}
-.word{font-family:var(--serif);font-weight:900;font-size:clamp(74px,23vw,260px);
-  line-height:.8;color:var(--ink);display:flex;justify-content:center;flex-wrap:nowrap}
-.word span{display:inline-block;animation:bob 3.2s ease-in-out infinite}
-.word span:nth-child(2){animation-delay:.25s;color:var(--hibiscus)}
-.word span:nth-child(3){animation-delay:.5s}
-.word span:nth-child(4){animation-delay:.75s;color:var(--tangerine)}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-.06em) rotate(-1.5deg)}}
-.plate-core .sub{font-family:var(--serif);font-weight:700;font-style:italic;
-  font-size:clamp(20px,5.5vw,40px);margin-top:.1em}
-.plate-core .tag{font-family:var(--body);font-weight:300;font-size:clamp(15px,3.8vw,20px);
-  margin:18px auto 0;max-width:30ch;line-height:1.5;opacity:.9}
-.scrolldown{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;
-  font-family:var(--mono);font-size:12px;font-weight:700;display:grid;justify-items:center;gap:8px;
-  opacity:.7;animation:bob 2.4s ease-in-out infinite}
+  .eyebrow{font-family:'Courier Prime',monospace;font-size:12px;line-height:1.6;color:var(--grn-mid)}
+  .eyebrow b{color:var(--grn)}
+  h2.big{font-weight:900;line-height:.98;font-size:clamp(34px,11vw,86px);text-shadow:0 0 14px rgba(116,255,69,.35)}
+  h2.big .sm{font-family:'Oswald';font-weight:700;display:inline-block}
+  .cap{font-size:clamp(14px,4vw,18px);line-height:1.5;max-width:34ch;margin-top:14px;color:#bfeeac}
+  .cap b{color:var(--grn);font-weight:800}
 
-/* =================== 2. THE CURSE =================== */
-#curse{background:var(--hibiscus);color:var(--paper2)}
-#curse .eyebrow{color:#FFD8E8}
-.curse-grid{display:grid;gap:clamp(34px,7vw,70px);margin-top:34px}
-.curse-head .huge{font-size:clamp(40px,12vw,108px);color:var(--paper2)}
-.curse-head .accent{color:var(--papaya);font-style:italic;font-weight:700}
-.curse-lead{font-weight:300;font-size:clamp(16px,4.2vw,22px);line-height:1.6;max-width:36ch}
-.tells{display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,46px);align-items:flex-start}
-.tell{display:grid;justify-items:center;gap:12px;width:clamp(120px,40vw,180px)}
-.tell svg{width:100%;height:auto;display:block}
-.tell .cap{font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;
-  color:#FFD8E8;line-height:1.3}
-@media(min-width:760px){
-  .curse-grid{grid-template-columns:1.1fr 1fr;align-items:center}
-  .tells{justify-content:flex-end}
-}
+  /* sticky note (the human translation) — taped, rotated (DOUBLE CONTAINER) */
+  .note{position:relative;display:inline-block;max-width:300px;margin-top:20px;
+    background:#0b1a0e;padding:14px 15px;transform:rotate(-2.5deg);
+    box-shadow:3px 5px 0 rgba(0,0,0,.5)}
+  .note::before{content:"";position:absolute;top:-9px;right:22px;width:60px;height:18px;
+    background:rgba(116,255,69,.14);transform:rotate(4deg);border:1px dashed var(--grn-mid)}
+  .note .lab{font-family:'Courier Prime',monospace;font-size:11px;color:var(--grn-mid);font-weight:700;display:block;margin-bottom:5px}
+  .note p{font-size:14px;line-height:1.45;color:#d6ffc6}
 
-/* =================== 3. THE RITUAL (orbit) =================== */
-#ritual{background:var(--jade);color:var(--paper2);text-align:center}
-#ritual .eyebrow{color:#9FF0D6}
-#ritual .huge{font-size:clamp(34px,10vw,84px);color:var(--paper2);margin:8px auto 6px}
-.ritual-sub{font-weight:300;font-size:clamp(15px,3.8vw,19px);max-width:30ch;margin:0 auto 40px;opacity:.92}
-.orbit{position:relative;width:min(92vw,560px);aspect-ratio:1;margin:0 auto}
-.orbit-ring{position:absolute;inset:8%;border-radius:50%;border:2px dashed rgba(255,255,255,.4)}
-.orbit-core{position:absolute;inset:31%;border-radius:50%;background:var(--paper2);color:var(--jade);
-  display:grid;place-items:center;text-align:center;padding:6%}
-.orbit-core b{font-family:var(--serif);font-weight:900;font-size:clamp(16px,4.6vw,26px);line-height:.95}
-.orbit-core span{font-family:var(--mono);font-size:11px;font-weight:700;display:block;margin-top:6px}
-.node{position:absolute;top:50%;left:50%;width:clamp(92px,26vw,138px);aspect-ratio:1;
-  margin:calc(clamp(92px,26vw,138px)/-2);border-radius:50%;background:var(--paper2);color:var(--ink);
-  display:grid;place-items:center;text-align:center;padding:8%;
-  box-shadow:0 8px 0 rgba(0,0,0,.12)}
-.node .n{font-family:var(--mono);font-weight:700;font-size:12px;color:var(--hibiscus)}
-.node .t{font-family:var(--serif);font-weight:900;font-size:clamp(14px,3.8vw,19px);line-height:.95;margin-top:2px}
-.node .d{font-family:var(--body);font-weight:300;font-size:11px;line-height:1.25;margin-top:5px}
+  .scene:nth-child(even) .bot-zone{margin-left:auto;text-align:left;direction:ltr}
+  .scene:nth-child(even) .bot-zone>*{direction:rtl}
+  .scene:nth-child(3) .note{transform:rotate(2deg)}
+  .scene:nth-child(4) .note{transform:rotate(-3.5deg)}
 
-/* =================== 4. DRAW A CARD (live demo) =================== */
-#draw{background:radial-gradient(circle at 50% 30%, var(--paper2), var(--paper) 70%);text-align:center}
-#draw .eyebrow{color:var(--ultramarine)}
-#draw .huge{font-size:clamp(36px,11vw,92px);margin:8px 0 4px}
-.draw-sub{font-weight:300;font-size:clamp(15px,3.8vw,19px);max-width:34ch;margin:0 auto 8px;opacity:.9}
-.scry-wrap{position:relative;width:min(90vw,440px);aspect-ratio:1;margin:30px auto 8px}
-.scry-card{position:absolute;inset:0;border-radius:50%;overflow:hidden;
-  background:var(--ultramarine);color:var(--paper2);
-  display:grid;place-items:center;padding:13% 11%;box-shadow:0 0 0 10px var(--ink), 0 0 0 14px var(--tangerine)}
-.scry-card .reading{display:grid;gap:9px;width:100%}
-.scry-card .row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;text-align:start}
-.scry-card .k{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--papaya);white-space:nowrap}
-.scry-card .v{font-family:var(--serif);font-weight:700;font-size:clamp(12px,3vw,15.5px);line-height:1.12}
-.scry-card .crown{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.1em;
-  color:#BfC4FF;margin-bottom:2px}
-.scry-card .ban{font-family:var(--mono);font-size:10px;color:#FF9ABf;margin-top:6px;line-height:1.3}
-.scry-fog{position:absolute;inset:0;border-radius:50%;cursor:grab;touch-action:none;z-index:2}
-.scry-hint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:3;
-  font-family:var(--mono);font-weight:700;font-size:clamp(13px,3.6vw,17px);color:var(--paper2);
-  text-shadow:0 1px 6px rgba(0,0,0,.4);transition:opacity .4s}
-.scry-hint small{display:block;font-weight:400;font-size:.7em;margin-top:6px;opacity:.85}
-.draw-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;margin-top:18px}
-#drawBtn{width:clamp(116px,30vw,150px);height:clamp(116px,30vw,150px);background:var(--tangerine);
-  color:var(--ink);font-size:15px;box-shadow:0 10px 0 #C53C0C;line-height:1.1}
-#drawBtn:active{box-shadow:0 4px 0 #C53C0C;transform:translateY(6px) scale(.97)}
-.draw-note{font-family:var(--mono);font-size:11.5px;opacity:.7;max-width:30ch;margin:14px auto 0;line-height:1.5}
+  /* scroll cue */
+  .cue{position:absolute;left:50%;transform:translateX(-50%);bottom:40px;font-family:'Courier Prime',monospace;
+    font-size:11px;color:var(--grn-mid);display:flex;flex-direction:column;align-items:center;gap:4px}
+  .cue svg{width:16px;height:22px;animation:bob 1.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 
-/* =================== 5. THIS VERY PLATE (meta) =================== */
-#meta{background:var(--papaya);color:var(--ink)}
-#meta .eyebrow{color:var(--hibiscus)}
-#meta .huge{font-size:clamp(32px,9.5vw,76px);margin:6px 0 4px}
-.meta-lead{font-weight:300;font-size:clamp(15px,3.8vw,20px);max-width:40ch;line-height:1.55;margin-bottom:34px}
-.reading-spine{position:relative;display:grid;gap:16px;max-width:620px}
-.glyph-row{display:grid;grid-template-columns:auto 1fr;gap:clamp(14px,4vw,26px);align-items:center}
-.glyph{width:clamp(54px,14vw,80px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
-  background:var(--ink);flex-shrink:0}
-.glyph svg{width:62%;height:62%}
-.glyph-txt .gk{font-family:var(--mono);font-weight:700;font-size:12px;color:var(--hibiscus)}
-.glyph-txt .gv{font-family:var(--serif);font-weight:700;font-size:clamp(16px,4.4vw,24px);line-height:1.05}
-.meta-foot{font-family:var(--serif);font-style:italic;font-weight:700;font-size:clamp(18px,5vw,30px);
-  margin-top:34px;max-width:24ch;line-height:1.2}
+  /* ===== final scene: center FILLS (WILDCARD: opposite of empty-center) ===== */
+  #grab-scene{justify-content:center;align-items:center;text-align:center}
+  #grab-scene .core{max-width:560px;width:100%}
+  #grab-scene h2{font-weight:900;font-size:clamp(36px,13vw,92px);line-height:.92;text-shadow:0 0 18px rgba(116,255,69,.5)}
+  #grab-scene .cap{margin:16px auto 0}
+  .files{margin-top:26px;text-align:right}
+  .frow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:flex-start;
+    padding:14px 0;border-top:1px solid var(--grn-dim)}
+  .frow .fn{font-family:'Oswald';font-weight:700;font-size:clamp(20px,6vw,28px);letter-spacing:.02em;flex:1 1 130px;text-align:right}
+  .frow .fn small{font-family:'Heebo';font-weight:400;font-size:12px;color:var(--grn-mid);display:block;letter-spacing:0;margin-top:2px}
+  button.take{cursor:pointer;font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;
+    background:var(--grn);color:var(--bg);border:none;padding:11px 15px}
+  button.take.ghost{background:transparent;color:var(--grn);border:1px solid var(--grn)}
+  button.take:active{transform:translateY(1px)}
+  .install{margin-top:16px;font-family:'Courier Prime',monospace;font-size:11px;line-height:1.9;color:var(--grn-mid);text-align:right}
+  .install code{color:var(--grn)}
+  .metaline{margin-top:22px;font-family:'Courier Prime',monospace;font-size:11px;color:var(--grn-mid);line-height:1.6}
 
-/* =================== 6. LINEAGE (moons) =================== */
-#lineage{background:var(--ultramarine);color:var(--paper2);text-align:center}
-#lineage .eyebrow{color:var(--papaya)}
-#lineage .huge{font-size:clamp(30px,9vw,72px);color:var(--paper2);margin:6px 0 2px}
-.lineage-sub{font-weight:300;font-size:clamp(15px,3.8vw,19px);max-width:34ch;margin:0 auto 14px;opacity:.9}
-.solar{position:relative;width:min(94vw,620px);aspect-ratio:1;margin:18px auto 0}
-.sun{position:absolute;inset:34%;border-radius:50%;background:var(--papaya);color:var(--ink);
-  display:grid;place-items:center;text-align:center;padding:4%;
-  font-family:var(--serif);font-weight:900;font-size:clamp(13px,3.4vw,18px);line-height:.95;
-  box-shadow:0 0 60px rgba(255,178,62,.6)}
-.moon{position:absolute;top:50%;left:50%;width:clamp(86px,23vw,128px);aspect-ratio:1;
-  margin:calc(clamp(86px,23vw,128px)/-2);border-radius:50%;display:grid;place-items:center;
-  text-align:center;padding:10%;color:var(--ink);font-family:var(--mono);font-weight:700;
-  font-size:clamp(10px,2.8vw,12.5px);line-height:1.18}
+  .toast{position:fixed;top:-60px;left:50%;transform:translateX(-50%);background:var(--grn);color:var(--bg);
+    font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;padding:10px 16px;z-index:40;transition:top .25s}
+  .toast.show{top:40px}
 
-/* =================== 7. TAKE THE DECK (cta) =================== */
-#take{background:var(--jade);color:var(--paper2);text-align:center}
-#take .eyebrow{color:#9FF0D6}
-#take .huge{font-size:clamp(34px,10vw,84px);color:var(--paper2);margin:6px auto 8px}
-.take-lead{font-weight:300;font-size:clamp(16px,4vw,21px);max-width:32ch;margin:0 auto 12px;line-height:1.5}
-.path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3vw,15px);
-  display:inline-block;color:var(--ink);background:var(--papaya);padding:10px 20px;border-radius:999px;margin:8px 0 30px}
-.take-actions{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
-#take .pill{border-color:var(--paper2);color:var(--paper2)}
-#take .pill:hover{background:var(--paper2);color:var(--jade)}
-#take .pill.solid{background:var(--tangerine);border-color:var(--tangerine);color:var(--ink)}
-#take .pill.solid:hover{background:var(--papaya);border-color:var(--papaya)}
-.steps3{display:flex;flex-wrap:wrap;gap:clamp(18px,5vw,40px);justify-content:center;margin:44px auto 0;max-width:760px}
-.step3{display:grid;justify-items:center;gap:8px;width:clamp(150px,40vw,210px)}
-.step3 .num{width:48px;height:48px;border-radius:50%;background:var(--paper2);color:var(--jade);
-  display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:22px}
-.step3 .lbl{font-family:var(--mono);font-weight:700;font-size:12px;line-height:1.35;text-align:center}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);
-  background:var(--ink);color:var(--paper);font-family:var(--mono);font-weight:700;font-size:13px;
-  padding:14px 26px;border-radius:999px;z-index:99;transition:transform .35s;box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.toast.show{transform:translateX(-50%) translateY(0)}
-
-/* footer */
-footer{background:var(--ink);color:var(--paper);text-align:center;padding:40px 20px;
-  font-family:var(--mono);font-size:12px;line-height:1.7}
-footer .big{font-family:var(--serif);font-weight:900;font-size:clamp(22px,7vw,40px);color:var(--paper);
-  margin-bottom:10px;display:block}
-footer a{color:var(--papaya);text-decoration:none}
-
-@media(prefers-reduced-motion:reduce){.spin,.word span,.scrolldown{animation:none}}
+  @media (min-width:760px){
+    .scene{padding:64px 56px 70px}
+    .cap{font-size:19px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tk-track,.cue svg{animation:none}
+  }
 </style>
 </head>
 <body>
 
-<!-- ============ 1. THE PLATE ============ -->
-<section id="plate">
-  <div class="ringwrap">
-    <!-- bespoke occult ring, bespoke SVG, zero emoji -->
-    <svg class="zodiac spin" viewBox="0 0 720 720" aria-hidden="true">
-      <defs><path id="ring" d="M360,360 m-300,0 a300,300 0 1,1 600,0 a300,300 0 1,1 -600,0"/></defs>
-      <circle cx="360" cy="360" r="318" fill="none" stroke="#231307" stroke-width="2" opacity=".25"/>
-      <circle cx="360" cy="360" r="300" fill="none" stroke="#E5167B" stroke-width="1.5" opacity=".4"/>
-      <text><textPath href="#ring" startOffset="0">LAYOUT · INTERACTION · CONTAINER · TYPE · PALETTE · ANOMALY · REFERENCE · WILDCARD · </textPath></text>
-    </svg>
-    <svg class="zodiac spin rev" style="width:min(74vw,540px)" viewBox="0 0 540 540" aria-hidden="true">
-      <circle cx="270" cy="270" r="232" fill="none" stroke="#231307" stroke-width="1.5" opacity=".3" stroke-dasharray="3 12"/>
-      <g stroke="#231307" stroke-width="1.6" opacity=".5" fill="none">
-        <line x1="270" y1="38" x2="270" y2="78"/><line x1="270" y1="462" x2="270" y2="502"/>
-        <line x1="38" y1="270" x2="78" y2="270"/><line x1="462" y1="270" x2="502" y2="270"/>
-      </g>
-      <circle cx="270" cy="270" r="150" fill="none" stroke="#FF5A1F" stroke-width="2" opacity=".45"/>
-    </svg>
-  </div>
+<svg class="defs" aria-hidden="true"><defs>
+  <filter id="break" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="turbulence" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
+    <feDisplacementMap id="dispmap" in="SourceGraphic" in2="n" scale="0"/>
+  </filter>
+</defs></svg>
 
-  <div class="plate-core">
-    <div class="kicker mono">A CLAUDE CODE SKILL · מנוע נגד שעמום</div>
-    <h1 class="word" aria-label="כאוס"><span>כ</span><span>א</span><span>ו</span><span>ס</span></h1>
-    <div class="sub">דִּיזַיְינֶר</div>
-    <p class="tag">המחשב הוא שף שמכין כל יום בדיוק אותה מנה, כי ככה בטוח לו. הכלי הזה נכנס לו למטבח, מערבב את המצרכים, ומכריח אותו להמציא משהו שעוד לא טעמת.</p>
-  </div>
+<!-- the grid that breaks down as you scroll (LAYOUT) -->
+<svg id="gridbg" aria-hidden="true" preserveAspectRatio="none"></svg>
+<div id="vignette" aria-hidden="true"></div>
+<div id="scan" aria-hidden="true"></div>
 
-  <a href="#draw" class="scrolldown">
-    שלוף קלף
-    <svg width="22" height="34" viewBox="0 0 22 34" fill="none"><path d="M11 2 A9 9 0 0 1 11 20" stroke="#231307" stroke-width="2.4" stroke-linecap="round"/><path d="M5 24 L11 32 L17 24" stroke="#231307" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </a>
-</section>
+<!-- ticker tapes (REFERENCE: stock-exchange board) -->
+<div class="ticker top" aria-hidden="true"><div class="tk-track" id="tkTop"></div></div>
+<div class="ticker bot" aria-hidden="true"><div class="tk-track" id="tkBot"></div></div>
 
-<!-- ============ 2. THE CURSE ============ -->
-<section id="curse">
-  <div class="eyebrow he">/ הבעיה</div>
-  <div class="curse-grid">
-    <div class="curse-head">
-      <h2 class="huge">למה הכל יוצא<br><span class="accent">אותו טעם?</span></h2>
-      <p class="curse-lead" style="margin-top:22px">המחשב מבשל תמיד מהמתכון הכי בטוח, הממוצע של כל מה שראה אי פעם. ולכן מה שיוצא לך צפוי מראש: הכרטיס המעוגל, האימוג'י, הכותרת באמצע ושלושה בלוקים מתחת. כל עוד הוא בוחר את המתכון, לא תקבל מנה אחרת, כי הוא תמיד הולך על המוכר.</p>
+<main>
+  <!-- SCENE 1 -->
+  <section class="scene">
+    <div class="top-zone">
+      <p class="eyebrow">// כל מה שמתחת לשורה הזו <b>עוצב על ידי הכלי שהדף מסביר</b>.<br>אף בן אדם לא בחר את העיצוב. רק גלגלנו קובייה.</p>
     </div>
-    <div class="tells">
-      <figure class="tell">
-        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#FFD8E8" stroke-width="2.5"/><rect x="34" y="40" width="52" height="40" rx="12" fill="none" stroke="#FBEFC8" stroke-width="3"/><line x1="42" y1="54" x2="78" y2="54" stroke="#FBEFC8" stroke-width="3" stroke-linecap="round"/><line x1="42" y1="66" x2="66" y2="66" stroke="#FBEFC8" stroke-width="3" stroke-linecap="round"/><line x1="26" y1="94" x2="94" y2="26" stroke="#FFB23E" stroke-width="4" stroke-linecap="round"/></svg>
-        <figcaption class="cap">הכרטיס המעוגל</figcaption>
-      </figure>
-      <figure class="tell">
-        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#FFD8E8" stroke-width="2.5"/><circle cx="60" cy="56" r="22" fill="none" stroke="#FBEFC8" stroke-width="3"/><circle cx="52" cy="52" r="3.4" fill="#FBEFC8"/><circle cx="68" cy="52" r="3.4" fill="#FBEFC8"/><path d="M49 64 Q60 73 71 64" fill="none" stroke="#FBEFC8" stroke-width="3" stroke-linecap="round"/><line x1="26" y1="94" x2="94" y2="26" stroke="#FFB23E" stroke-width="4" stroke-linecap="round"/></svg>
-        <figcaption class="cap">האימוג'י העצלן</figcaption>
-      </figure>
-      <figure class="tell">
-        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="none" stroke="#FFD8E8" stroke-width="2.5"/><line x1="40" y1="46" x2="80" y2="46" stroke="#FBEFC8" stroke-width="4" stroke-linecap="round"/><line x1="46" y1="58" x2="74" y2="58" stroke="#FBEFC8" stroke-width="2.6" stroke-linecap="round"/><circle cx="44" cy="80" r="9" fill="none" stroke="#FBEFC8" stroke-width="2.6"/><circle cx="60" cy="80" r="9" fill="none" stroke="#FBEFC8" stroke-width="2.6"/><circle cx="76" cy="80" r="9" fill="none" stroke="#FBEFC8" stroke-width="2.6"/><line x1="26" y1="94" x2="94" y2="26" stroke="#FFB23E" stroke-width="4" stroke-linecap="round"/></svg>
-        <figcaption class="cap">הירו במרכז + 3</figcaption>
-      </figure>
+    <div class="bot-zone">
+      <h2 class="big">כל מה ש<span class="sm caps">AI</span> מעצב,<br>נראה אותו דבר.</h2>
+      <p class="cap">כותרת באמצע, כמה ריבועים, אימוג'י. ראית את זה אלף פעם. תכף נראה לך למה, ואיך משברים את זה.</p>
     </div>
-  </div>
-</section>
-
-<!-- ============ 3. THE RITUAL ============ -->
-<section id="ritual">
-  <div class="eyebrow he" style="text-align:start">/ המתכון</div>
-  <h2 class="huge">חמישה צעדים,<br>בכל מנה</h2>
-  <p class="ritual-sub">לא השראה. מתכון. רצים אותו בסדר, כל פעם מהתחלה.</p>
-  <div class="orbit" id="orbit">
-    <div class="orbit-ring"></div>
-    <div class="orbit-core"><div><b>chaos<br>design</b><span class="mono">ENGINE</span></div></div>
-    <!-- 5 nodes positioned by JS on a circle -->
-    <div class="node" data-i="0"><div><div class="n">01</div><div class="t">נִיצוֹץ</div><div class="d">זורקים רעיון מטורף מהחיים</div></div></div>
-    <div class="node" data-i="1"><div><div class="n">02</div><div class="t">גַּלְגּוּל</div><div class="d">הקובייה בוחרת סגנון, לא המחשב</div></div></div>
-    <div class="node" data-i="2"><div><div class="n">03</div><div class="t">בִּישׁוּל</div><div class="d">בונים בדיוק לפי מה שיצא</div></div></div>
-    <div class="node" data-i="3"><div><div class="n">04</div><div class="t">כְּלָלֵי הַבַּיִת</div><div class="d">רשימת אסור שאי אפשר לעבור</div></div></div>
-    <div class="node" data-i="4"><div><div class="n">05</div><div class="t">טְעִימָה</div><div class="d">יצא רגיל? מתחילים מחדש</div></div></div>
-  </div>
-</section>
-
-<!-- ============ 4. DRAW A CARD ============ -->
-<section id="draw">
-  <div class="eyebrow he">/ נסה בעצמך</div>
-  <h2 class="huge">שלוף קלף</h2>
-  <p class="draw-sub">זה אמיתי, לא הצגה. הכפתור שולף תקליט אקראי מהמדף, כמו DJ שלרגע לא יודע מה ינגן. גרור אצבע על הקלף כדי לגלות מה יצא, הוא יתעמעם לאט אז תמשיך.</p>
-
-  <div class="scry-wrap">
-    <div class="scry-card" id="scryCard"><div class="reading" id="reading"></div></div>
-    <canvas class="scry-fog" id="fog"></canvas>
-    <div class="scry-hint" id="hint">גָּרֵד לְגַלּוֹת<small>החזק וגרור על הקלף</small></div>
-  </div>
-
-  <div class="draw-actions">
-    <button class="cta disc" id="drawBtn">שלוף<br>קלף<br>חדש</button>
-  </div>
-  <p class="draw-note mono">כל שליפה אחרת מהקודמת. אותה בקשה, מנה אחרת בכל פעם. זה כל הקסם.</p>
-</section>
-
-<!-- ============ 5. THIS VERY PLATE ============ -->
-<section id="meta">
-  <div class="eyebrow he">/ הוכחה</div>
-  <h2 class="huge">גם הדף הזה<br>יצא מגלגול</h2>
-  <p class="meta-lead">אני לא בחרתי לוח טארוט טרופי עם רק עיגולים. הקובייה בחרה בשבילי. ככה יצאה המנה, וזה בדיוק מה שאתה מסתכל עליו עכשיו:</p>
-
-  <div class="reading-spine">
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><text x="30" y="42" font-family="Frank Ruhl Libre" font-weight="900" font-size="40" fill="#F8E2A8" text-anchor="middle">A</text></svg></span>
-      <span class="glyph-txt"><div class="gk">LAYOUT</div><div class="gv">טיפוגרפיה קינטית מלוא המסך, המילים הן העיצוב</div></span>
+    <div class="cue" aria-hidden="true">
+      <svg viewBox="0 0 16 22" fill="none" stroke="#2f6e26" stroke-width="2"><path d="M8 2 V18 M3 13 L8 19 L13 13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      גלול
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><path d="M14 40 Q30 10 46 40" fill="none" stroke="#F8E2A8" stroke-width="4" stroke-linecap="round"/><circle cx="44" cy="22" r="5" fill="#FF5A1F"/></svg></span>
-      <span class="glyph-txt"><div class="gk">INTERACTION</div><div class="gv">גירוד לחשיפה × דעיכה בזמן (היברידי)</div></span>
+  </section>
+
+  <!-- SCENE 2 -->
+  <section class="scene">
+    <div class="top-zone">
+      <p class="eyebrow">// שלב 1 מתוך 4 ·הבעיה</p>
+      <h2 class="big">כי הוא תמיד מנחש<br>את הכי צפוי.</h2>
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="18" fill="none" stroke="#F8E2A8" stroke-width="4"/><line x1="14" y1="46" x2="46" y2="14" stroke="#FF5A1F" stroke-width="4" stroke-linecap="round"/></svg></span>
-      <span class="glyph-txt"><div class="gk">CONTAINER</div><div class="gv">הושתק, אין כרטיסים, הקיבוץ נישא בטיפוגרפיה ובמסלולים</div></span>
+    <div class="bot-zone">
+      <p class="cap">בינה מלאכותית עובדת לפי "מה הכי שכיח". והכי שכיח אצלה, יוצא הכי <b>משעמם</b> אצלך. לכן הכל נראה אותו דבר.</p>
+      <div class="note">
+        <span class="lab">// בעברית של בני אדם</span>
+        <p>"בינה מלאכותית" = הצ'אטבוטים שמייצרים לך טקסט, תמונות ואתרים. למשל קלוד או ChatGPT.</p>
+      </div>
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><text x="20" y="42" font-family="Frank Ruhl Libre" font-weight="900" font-size="34" fill="#F8E2A8">S</text><text x="34" y="44" font-family="Space Mono" font-size="18" fill="#018F6F">01</text></svg></span>
-      <span class="glyph-txt"><div class="gk">TYPE</div><div class="gv">סריף דרמטי מול מונוספייס, התנגשות חזיתית</div></span>
+  </section>
+
+  <!-- SCENE 3 -->
+  <section class="scene">
+    <div class="top-zone">
+      <p class="eyebrow">// שלב 2 מתוך 4 ·הפתרון</p>
+      <h2 class="big">אז בנינו לו<br>רסן.</h2>
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><circle cx="22" cy="26" r="12" fill="#E5167B"/><circle cx="38" cy="36" r="12" fill="#FFB23E"/><circle cx="30" cy="30" r="6" fill="#018F6F"/></svg></span>
-      <span class="glyph-txt"><div class="gk">PALETTE</div><div class="gv">טרופי רווי, בלי מצב כהה</div></span>
+    <div class="bot-zone">
+      <p class="cap">תוסף קטן שמכריח את ה-AI לעצור, <b>לגלגל קובייה</b> של בחירות עיצוב, ולהתחייב לתוצאה, גם אם היא לא ה"בטוחה". כל פעם יוצא משהו אחר.</p>
+      <div class="note">
+        <span class="lab">// מה זה "תוסף" / "סקיל"</span>
+        <p>קובץ קטן שמוסיפים ל-AI, והוא משנה את ההתנהגות שלו. כמו לתת לו כלל חדש לעבוד לפיו.</p>
+      </div>
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="20" fill="none" stroke="#F8E2A8" stroke-width="3"/><circle cx="30" cy="30" r="11" fill="none" stroke="#FF5A1F" stroke-width="3"/><circle cx="30" cy="30" r="3" fill="#F8E2A8"/></svg></span>
-      <span class="glyph-txt"><div class="gk">ANOMALY</div><div class="gv">רק עיגולים וקשתות, אפס מלבנים</div></span>
+  </section>
+
+  <!-- SCENE 4 -->
+  <section class="scene">
+    <div class="top-zone">
+      <p class="eyebrow">// שלב 3 מתוך 4 ·ההוכחה</p>
+      <h2 class="big">ורגע.<br>זה? זה הוא.</h2>
     </div>
-    <div class="glyph-row">
-      <span class="glyph"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="20" fill="none" stroke="#F8E2A8" stroke-width="2.5"/><path d="M30 14 L34 27 L47 27 L36 35 L40 48 L30 40 L20 48 L24 35 L13 27 L26 27 Z" fill="#FFB23E"/></svg></span>
-      <span class="glyph-txt"><div class="gk">REFERENCE</div><div class="gv">קלף טארוט / לוח אוקולטי</div></span>
+    <div class="bot-zone">
+      <p class="cap">הדף הזה לא תוכנן להיות יפה. רק גלגלנו את הקובייה ויצא: לוח בורסה, ירוק זרחני, ורשת שמתפרקת ככל שגללת. <b>שום אתר AI לא נראה ככה.</b> זאת ההוכחה, אתה בתוכה עכשיו.</p>
+      <div class="note">
+        <span class="lab">// שמת לב?</span>
+        <p>הרשת שמאחורי הכל הייתה מסודרת למעלה, והתפרקה תוך כדי שגללת. זה הכלי בפעולה.</p>
+      </div>
     </div>
-  </div>
-  <p class="meta-foot">ממנה אחת. בלי שאני בורר את המוכר.</p>
-</section>
+  </section>
 
-<!-- ============ 6. LINEAGE ============ -->
-<section id="lineage">
-  <div class="eyebrow he" style="text-align:start">/ מאיפה זה בא</div>
-  <h2 class="huge">שש פעמים,<br>שש מנות אחרות</h2>
-  <p class="lineage-sub">הכלי נולד מערב אחד שיצאו בו שישה אתרים, כל אחד עולם בפני עצמו. רשימת האסור קיימת כי בשניים מהם עוד התגנבו הכרטיס המעוגל והאימוג'י. בדיוק מה שהמטבח הזה עוצר היום.</p>
-  <div class="solar" id="solar">
-    <div class="sun"><div>6 אתרים<br>מנוע 1</div></div>
-    <div class="moon" data-i="0" style="background:#E5167B;color:#FBEFC8">ניאון<br>גליץ'</div>
-    <div class="moon" data-i="1" style="background:#FF5A1F">נוזל<br>כהה</div>
-    <div class="moon" data-i="2" style="background:#FFB23E">מגזין<br>קולאז'</div>
-    <div class="moon" data-i="3" style="background:#018F6F;color:#FBEFC8">במה<br>קולית</div>
-    <div class="moon" data-i="4" style="background:#F8E2A8">מוניטור<br>דופק</div>
-    <div class="moon" data-i="5" style="background:#9FF0D6">פיזיקת<br>גרירה</div>
-  </div>
-</section>
+  <!-- SCENE 5 — center fills (WILDCARD) -->
+  <section class="scene" id="grab-scene">
+    <div class="core">
+      <p class="eyebrow" style="text-align:center">// שלב 4 מתוך 4 ·קח את זה</p>
+      <h2>קח<br>את הכלי.</h2>
+      <p class="cap">משתמש בקלוד (<span class="caps">Claude</span>)? הורד שני קבצים, שים אותם בתיקיית הכלים, וכל בקשת עיצוב תגלגל קובייה. לא משתמש? עכשיו לפחות אתה מבין מה זה, ותדע לבקש: "אל תיתן לי את העיצוב הכי שכיח".</p>
 
-<!-- ============ 7. TAKE THE DECK ============ -->
-<section id="take">
-  <div class="eyebrow he">/ קח את המתכון</div>
-  <h2 class="huge">העתק. הדבק.<br>תבשל בעצמך.</h2>
-  <p class="take-lead">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב־Claude Code שלך:</p>
-  <div class="path mono">~/.claude/skills/chaos-design/</div>
+      <div class="files">
+        <div class="frow">
+          <span class="fn">SKILL.md<small>ההסבר לכלי: מתי, איך מגלגלים, השלבים</small></span>
+          <button class="take" data-dl="skill">הורד</button>
+          <button class="take ghost" data-copy="skill">העתק</button>
+        </div>
+        <div class="frow">
+          <span class="fn">dice.py<small>הקובייה עצמה: כל אפשרויות העיצוב</small></span>
+          <button class="take" data-dl="dice">הורד</button>
+          <button class="take ghost" data-copy="dice">העתק</button>
+        </div>
+      </div>
+      <div class="install">
+        <div>$ <code>mkdir -p ~/.claude/skills/chaos-design</code></div>
+        <div>$ <code>mv SKILL.md dice.py ~/.claude/skills/chaos-design/</code></div>
+        <div>$ <code>python ~/.claude/skills/chaos-design/dice.py</code></div>
+      </div>
+      <p class="metaline">לאורך כל הדף המרכז נשאר ריק בכוונה. רק עכשיו הוא מתמלא. גם זה היה בקובייה.</p>
+    </div>
+  </section>
+</main>
 
-  <div class="take-actions">
-    <button class="pill solid" id="copySkill">העתק SKILL.md</button>
-    <button class="pill" id="dlSkill">הורד SKILL.md</button>
-    <button class="pill" id="dlDice">הורד dice.py</button>
-  </div>
-
-  <div class="steps3">
-    <div class="step3"><span class="num">1</span><span class="lbl">הורד את שני<br>הקבצים</span></div>
-    <div class="step3"><span class="num">2</span><span class="lbl">שים אותם ב־<br>skills/chaos-design</span></div>
-    <div class="step3"><span class="num">3</span><span class="lbl">בקש "תעשה אתר",<br>המטבח נדלק לבד</span></div>
-  </div>
-  <p class="take-note mono" style="font-size:11.5px;opacity:.75;margin-top:30px;line-height:1.6">דורש גם את creative-seeds (שלב הזרע). שניהם חלק מאותו ערכת כלים אנטי־AI.</p>
-</section>
-
-<footer>
-  <span class="big">תפסיק לקבל את אותה מנה.</span>
-  chaos-design · a Claude Code skill by Mosh Frenkel<br>
-  העמוד הזה בושל על ידי הסקיל עצמו · <a href="#plate">חזרה ללוח</a>
-</footer>
-
-<div class="toast" id="toast">הועתק</div>
-
-<!-- embedded skill files (for copy/download) -->
-<script type="text/plain" id="src-dice">#!/usr/bin/env python3
-# Chaos Design dice - externalizes structural choices away from the model's "average",
-# for ANY visual medium. Run:  python dice.py [medium] [N]
-#   medium = web | deck | image | video | social   (default web)
-#   N      = number of independent rolls            (default 1)
-import random, sys
-
-DECKS = {
-  # ---------- shared across most media ----------
-  "TYPE": [
-    "one giant word per screen, oversized, overflowing the frame",
-    "serif display + monospace data, hard clash",
-    "vertical / rotated running text",
-    "kinetic type (letters move, bob, react)",
-    "ransom-note (mixed sizes/weights/styles per word)",
-    "variable-weight that thickens on scroll/hover",
-    "outline type + solid type interleaved",
-    "ALL-CAPS condensed poster type vs tiny captions",
-  ],
-  "PALETTE": [
-    "strict duotone (2 colors only, no greys)",
-    "near-monochrome + one violently hot accent",
-    "intentional clash / 'ugly on purpose' but confident",
-    "black & white + a single spot color",
-    "risograph 2-spot overprint (offset, misregistered)",
-    "neon on near-black",
-    "paper cream + ink black, editorial",
-    "high-saturation tropical, no dark mode",
-  ],
-  "ANOMALY": [   # one weird law the whole piece obeys with discipline
-    "everything tilted exactly %d degrees" % random.choice([2,3,4,-3,6]),
-    "no horizontal lines anywhere - all edges curve or slant",
-    "only circles & arcs, zero rectangles",
-    "elements allowed to overflow & be clipped by the frame edge",
-    "a recurring hand-drawn mascot / scribble appears throughout",
-    "one element is ALWAYS moving / alive on every frame",
-    "perfect symmetry is forbidden - every pairing is uneven",
-    "a deliberate 'broken' glitch that is clearly intentional",
-    "scale play - one thing absurdly large or tiny vs the rest",
-    "one common color (e.g. blue) is banned from the whole piece",
-  ],
-  "REFERENCE": [  # anchor the look to a NON-website / non-default thing
-    "Swiss brutalist protest poster",
-    "1970s vinyl record sleeve",
-    "subway / transit map",
-    "punk photocopied zine",
-    "kidnapper ransom note",
-    "Memphis / 80s postmodern design",
-    "tarot card / occult plate",
-    "hospital heart-rate monitor",
-    "vaporwave shopping mall directory",
-    "broadsheet newspaper front page",
-    "museum wall / gallery label",
-    "retro arcade cabinet / game UI",
-  ],
-  # ---------- spatial organization (web / deck / social) ----------
-  "LAYOUT": [
-    "collage / overlapping torn pieces, intentional mess",
-    "hard diagonal grid (everything skewed on one axis)",
-    "scattered absolute 'playground' (objects float in space)",
-    "editorial spread with marginalia & pull-quotes in the gutter",
-    "full-bleed kinetic TYPE as the layout (words ARE the design)",
-    "radial / circular orbit around one center point",
-    "anarchic masonry (wildly unequal blocks, no rhythm)",
-    "spatial map / blueprint / floor-plan",
-    "brutal asymmetric split (70/30, one side invades the other)",
-    "horizontal sideways flow (a journey across a wall)",
-  ],
-  # info grouping - anything BUT a rounded rectangle card
-  "CONTAINER": [
-    "torn / ripped paper edges", "sticky notes (rotated, taped)",
-    "polaroid photo frames", "ticket stub / boarding pass",
-    "speech bubbles", "terminal / window chrome",
-    "tags & labels on strings", "handwritten list / checklist",
-    "ledger / table / spreadsheet rows", "NO container - bleeds onto the page",
-  ],
-  # ---------- web only ----------
-  "INTERACTION": [
-    "physics: drag & throw elements, they collide with walls",
-    "audio-reactive: generated sound drives the visuals",
-    "scroll-jack scenes that morph between fixed states",
-    "cursor-as-tool (marker / spotlight / magnet / eraser)",
-    "gyro / tilt parallax (phone movement moves the world)",
-    "press-and-hold to reveal / charge / unlock",
-    "draw-to-reveal (user paints content into view)",
-    "time-decay: elements mutate, rot, or grow over time",
-    "beat / pulse sync (everything breathes on one clock)",
-    "hover-distortion / liquid warp on contact",
-  ],
-  # ---------- presentation only ----------
-  "SLIDE": [
-    "one-word slides, zero bullets ever",
-    "oversized numbers / stats as the whole slide",
-    "full-bleed image slides alternating with pure-type slides",
-    "manifesto slides (a single bold sentence, huge)",
-    "asymmetric data slides, content shoved to one edge",
-    "a running visual motif that mutates slide to slide",
-  ],
-  # ---------- image / video framing ----------
-  "SHOT": [
-    "extreme macro close-up", "dutch / tilted angle",
-    "flat-lay top-down", "silhouette / hard backlight",
-    "double-exposure", "wide frame with vast negative space",
-    "fisheye / lens distortion", "hard direct-flash snapshot",
-    "off-center portrait, subject pushed to the edge",
-    "impossible scale (subject tiny or giant in the scene)",
-  ],
-  "SUBJECT": [   # how the subject is treated
-    "single hero object, isolated, huge",
-    "human cropped hard (only hands / eyes / motion)",
-    "texture IS the subject (skin, fabric, surface)",
-    "color-isolation (one colored thing, rest desaturated)",
-    "motion-blur / long exposure energy",
-    "cut-out collage / mixed media",
-    "surreal juxtaposition (two things that don't belong)",
-    "repetition of one element into a pattern",
-  ],
-  # ---------- video only ----------
-  "MOTION": [
-    "whip-pan hard cuts", "match-cut morphs between shots",
-    "single unbroken one-take drift", "glitch / datamosh transitions",
-    "freeze-frame punches with text stabs", "speed-ramp (slow then snap fast)",
-    "kinetic text landing on the beat", "jump-cut staccato rhythm",
-    "parallax layers sliding at different speeds", "light & shadow as the transition",
-  ],
-  # meta-cards that bend the roll itself
-  "WILDCARD": [
-    "do the deliberate OPPOSITE of one rolled card",
-    "merge two cards from one deck into a single hybrid",
-    "let the creative-seed override the REFERENCE entirely",
-    "add a recurring mascot/character that reacts to the user",
-    "one section loudly BREAKS the ANOMALY law, on purpose",
-    "collapse it all into ONE uninterrupted scene, no sections",
-    "ban the most obvious color for this brand",
-    "smash a second LAYOUT into the first halfway through",
-  ],
-}
-
-MEDIA = {
-  "web":    ["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
-  "deck":   ["SLIDE","LAYOUT","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
-  "image":  ["SHOT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
-  "video":  ["MOTION","SHOT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
-  "social": ["LAYOUT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
-}
-
-BAN = [
-  "rounded-rectangle cards stacked/gridded in a row or column",
-  "hero / opener followed by 3 symmetric feature blocks",
-  "ANY emoji, icon-font, sticker, or dingbat - draw bespoke SVG / art instead",
-  "a centered title + paragraph (or bulleted list), repeated frame after frame",
-  "equal-width columns / evenly-spaced symmetric grids",
-  "the same uniform corner-radius / spacing on everything",
-  "generic stock-photo look, centered subject, flat even lighting",
-]
-
-MUTATORS = [
-  ("INVERT",     "do the deliberate opposite of the {k} card"),
-  ("MUTE",       "drop the {k} card entirely; force another axis to carry its job"),
-  ("EXAGGERATE", "push the {k} card to an absurd, uncomfortable extreme"),
-]
-def roll(i, medium):
-  print(f"========== ROLL {i}  [{medium}] ==========")
-  for k in MEDIA[medium]:
-    print(f"  {k:12} -> {random.choice(DECKS[k])}")
-  # MUTATION step: ~50% chance to twist one already-rolled axis
-  if random.random() < 0.5:
-    k = random.choice([a for a in MEDIA[medium] if a != "WILDCARD"])
-    if random.random() < 0.5:
-      print(f"  MUTATION     -> DOUBLE {k}: force it to coexist with '{random.choice(DECKS[k])}'")
-    else:
-      name, txt = random.choice(MUTATORS)
-      print(f"  MUTATION     -> {name} {k}: " + txt.format(k=k))
-  else:
-    print("  MUTATION     -> (none this roll)")
-  print()
-
-if __name__ == "__main__":
-  args = sys.argv[1:]
-  medium = "web"; n = 1
-  for a in args:
-    if a in MEDIA: medium = a
-    elif a.isdigit(): n = int(a)
-  for i in range(1, n + 1):
-    roll(i, medium)
-  print("---- HARD BAN-LIST (auto-fail if present) ----")
-  for b in BAN: print("  x " + b)
-  print("\nObey the roll. No two sections/slides/shots alike. Mobile-first for screens. RTL Hebrew. Bespoke art only.")
-</script>
-
-<script type="text/plain" id="src-skill">---
-name: chaos-design
-description: Anti-template visual engine for ANY expressive visual deliverable - websites, landing pages, presentations/decks, images, posters, carousels, stories, thumbnails, social graphics, and video/reels/ads. Forces genuinely different, non-generic results every run by rolling structural constraints instead of letting the model fall back to its "average" (card grids, emoji, centered hero, symmetric stock look).
----
-
-# Chaos Design
-
-An AI defaults to templates because it generates from the statistical **average** of what it has seen. "Rounded card + emoji + centered hero" is always the next-most-likely choice. Real chaos will not happen if *I* choose the structure, because I will choose the average. So this skill **takes the structural decision away from the model** and hands it to a randomizer + a ban-list + a self-audit.
-
-## When it fires
-Before producing ANY expressive visual: site, page, deck/presentation, image, poster, carousel, story, thumbnail, social graphic, or video. Skip only for **data-precise** outputs where correctness beats style - functional dashboards, real charts, data tables.
-
-## The method - run it in order, every time
-
-### 1. Seed the mind
-Run the `creative-seeds` skill first (this skill assumes it). Pick ONE seed and translate it into a literal **mechanic / motif**, not a mood.
-
-### 2. Pick the medium, then roll the dice
-    python "$HOME/.claude/skills/chaos-design/dice.py" <medium>
-    # medium = web | deck | image | video | social   (Windows: %USERPROFILE%\.claude\...)
-Each medium rolls its own decks. It returns one card per deck plus the hard ban-list. The same brief produces a different scaffold every run. You must obey the roll, even when it is uncomfortable. Re-roll only if a card is technically impossible, never just because it is hard.
-
-### 3. Build against the roll
-- REFERENCE anchors the look to something that is NOT a default web/app/stock thing.
-- CONTAINER replaces "the card" / "the bullet list".
-- ANOMALY is one law the entire piece obeys with discipline.
-- INTERACTION / MOTION / SHOT is the single signature behavior or framing.
-
-### 4. Hard rules (on top of the roll)
-- Ban-list from dice.py is law. No emoji / icon-fonts / stickers - every decorative element is bespoke art / inline SVG. No stacked rounded cards. No centered-hero+3.
-- No two adjacent sections/slides/shots share an archetype.
-- Mobile-first for any screen output; enhance up with min-width.
-- Self-contained index.html for web, opens automatically, real CTAs.
-
-### 5. Self-audit gate (score >= 8/10 before showing)
-Hunt your own AI tells, fix, regenerate the offending part. Rounded-card grid? Emoji? Centered title+paragraph repeated? Two neighboring sections with the same archetype? Perfect symmetry unjustified? Did I obey every rolled card?
-
-## Pairs with
-`creative-seeds` (step 1) · `image-generation` · `commercial-director` · `anti-ai-linter`.
-</script>
+<div class="toast" id="toast"></div>
 
 <script>
-/* ===== port of the real dice.py engine (web deck) ===== */
-const DECKS={
- LAYOUT:["collage / overlapping torn pieces, intentional mess","hard diagonal grid (everything skewed on one axis)","scattered absolute 'playground' (objects float in space)","editorial spread with marginalia & pull-quotes in the gutter","full-bleed kinetic TYPE as the layout (words ARE the design)","radial / circular orbit around one center point","anarchic masonry (wildly unequal blocks, no rhythm)","spatial map / blueprint / floor-plan","brutal asymmetric split (70/30, one side invades the other)","horizontal sideways flow (a journey across a wall)"],
- INTERACTION:["physics: drag & throw elements, they collide with walls","audio-reactive: generated sound drives the visuals","scroll-jack scenes that morph between fixed states","cursor-as-tool (marker / spotlight / magnet / eraser)","gyro / tilt parallax (phone movement moves the world)","press-and-hold to reveal / charge / unlock","draw-to-reveal (user paints content into view)","time-decay: elements mutate, rot, or grow over time","beat / pulse sync (everything breathes on one clock)","hover-distortion / liquid warp on contact"],
- CONTAINER:["torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames","ticket stub / boarding pass","speech bubbles","terminal / window chrome","tags & labels on strings","handwritten list / checklist","ledger / table / spreadsheet rows","NO container - bleeds onto the page"],
- TYPE:["one giant word per screen, oversized, overflowing the frame","serif display + monospace data, hard clash","vertical / rotated running text","kinetic type (letters move, bob, react)","ransom-note (mixed sizes/weights/styles per word)","variable-weight that thickens on scroll/hover","outline type + solid type interleaved","ALL-CAPS condensed poster type vs tiny captions"],
- PALETTE:["strict duotone (2 colors only, no greys)","near-monochrome + one violently hot accent","intentional clash / 'ugly on purpose' but confident","black & white + a single spot color","risograph 2-spot overprint (offset, misregistered)","neon on near-black","paper cream + ink black, editorial","high-saturation tropical, no dark mode"],
- ANOMALY:["everything tilted exactly 3 degrees","no horizontal lines anywhere - all edges curve or slant","only circles & arcs, zero rectangles","elements allowed to overflow & be clipped by the frame edge","a recurring hand-drawn mascot / scribble appears throughout","one element is ALWAYS moving / alive on every frame","perfect symmetry is forbidden - every pairing is uneven","a deliberate 'broken' glitch that is clearly intentional","scale play - one thing absurdly large or tiny vs the rest","one common color (e.g. blue) is banned from the whole piece"],
- REFERENCE:["Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map","punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern design","tarot card / occult plate","hospital heart-rate monitor","vaporwave shopping mall directory","broadsheet newspaper front page","museum wall / gallery label","retro arcade cabinet / game UI"],
- WILDCARD:["do the deliberate OPPOSITE of one rolled card","merge two cards from one deck into a single hybrid","let the creative-seed override the REFERENCE entirely","add a recurring mascot/character that reacts to the user","one section loudly BREAKS the ANOMALY law, on purpose","collapse it all into ONE uninterrupted scene, no sections","ban the most obvious color for this brand","smash a second LAYOUT into the first halfway through"]
+/* ===== ticker tape (stock-exchange board, design clichés crashing) ===== */
+const TICK=[
+  ["GENERIC-AI",-94],["EMOJI",-88],["CARD-GRID",-76],["CENTERED-HERO",-69],
+  ["ORIGINALITY",+1240],["SURPRISE",+318],["JAW-DROP",+207],["CHAOS",+999],
+  ["SAME-AS-EVERYONE",-91],["TEMPLATE",-83]
+];
+function arrow(up){return up
+  ? '<svg viewBox="0 0 10 10" fill="none" stroke="#74ff45" stroke-width="1.6"><path d="M5 9 V2 M2 5 L5 1 L8 5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  : '<svg viewBox="0 0 10 10" fill="none" stroke="#74ff45" stroke-width="1.6"><path d="M5 1 V8 M2 5 L5 9 L8 5" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function tickHTML(){
+  return TICK.map(([n,v])=>{
+    const up=v>0;
+    return `<span class="tk-item">${arrow(up)} ${n} <span class="v">${up?'+':''}${v}%</span></span>`;
+  }).join('');
+}
+document.getElementById('tkTop').innerHTML=tickHTML()+tickHTML();
+document.getElementById('tkBot').innerHTML=tickHTML()+tickHTML();
+
+/* ===== the breaking grid (LAYOUT) ===== */
+(function grid(){
+  const s=document.getElementById('gridbg');
+  const W=window.innerWidth,H=window.innerHeight;
+  s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  s.setAttribute('filter','url(#break)');
+  const step=Math.max(38,Math.round(W/12));
+  let p='';
+  for(let x=0;x<=W;x+=step)p+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#2f6e26" stroke-width="1"/>`;
+  for(let y=0;y<=H;y+=step)p+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#2f6e26" stroke-width="1"/>`;
+  s.innerHTML=p;
+})();
+/* scroll drives how broken the grid is (scroll-jack morph) */
+const dispmap=document.getElementById('dispmap');
+let ticking=false;
+function onScroll(){
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{
+    const max=document.body.scrollHeight-window.innerHeight;
+    const prog=max>0?Math.min(1,window.scrollY/max):0;
+    dispmap.setAttribute('scale',(prog*prog*46).toFixed(1));
+    ticking=false;
+  });
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+window.addEventListener('resize',()=>{location.reload?null:null;});
+onScroll();
+
+/* ===== take the skill: fetch real sibling files, fallback note ===== */
+const FNAME={skill:"SKILL.md",dice:"dice.py"};
+const FALLBACK={
+skill:"# Chaos Design\\n\\nA skill that forces AI to roll a dice of design choices instead of repeating its average. Run creative-seeds, then python dice.py <medium>, obey the roll. Download the full file from the live page.",
+dice:"# chaos-design dice.py — download the full file from the live page."
 };
-const WEB=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
-const BAN=["rounded-rectangle cards stacked/gridded","hero + 3 symmetric feature blocks","ANY emoji / icon-font / sticker","centered title+paragraph repeated","equal-width symmetric grids","uniform corner-radius on everything","generic centered-subject stock look"];
-const HE={LAYOUT:"פריסה",INTERACTION:"אינטראקציה",CONTAINER:"מיכל",TYPE:"טיפוגרפיה",PALETTE:"פלטה",ANOMALY:"חוק חריג",REFERENCE:"השראה",WILDCARD:"קלף פראי"};
-const pick=a=>a[Math.floor(Math.random()*a.length)];
-
-function rollWeb(){
-  const r={};
-  WEB.forEach(k=>r[k]=pick(DECKS[k]));
-  return r;
-}
-
-/* ===== render the tarot reading ===== */
-const reading=document.getElementById('reading');
-function renderCard(){
-  const r=rollWeb();
-  let html='<div class="crown mono">THE CHAOS PLATE · web</div>';
-  WEB.forEach(k=>{
-    html+=`<div class="row"><span class="k">${k} · ${HE[k]}</span><span class="v">${r[k]}</span></div>`;
-  });
-  html+=`<div class="ban">BAN: ${pick(BAN)}</div>`;
-  reading.innerHTML=html;
-}
-renderCard();
-
-/* ===== draw-to-reveal × time-decay fog (WILDCARD hybrid) ===== */
-const fog=document.getElementById('fog');
-const wrap=document.querySelector('.scry-wrap');
-const hint=document.getElementById('hint');
-const ctx=fog.getContext('2d');
-let W,H,drew=false;
-
-function paintFog(alpha){
-  // tropical swirl fog, only arcs (ANOMALY honored)
-  ctx.globalCompositeOperation='source-over';
-  ctx.globalAlpha=alpha;
-  const cols=['#2A2BD6','#E5167B','#FF5A1F','#018F6F'];
-  for(let i=0;i<70;i++){
-    ctx.beginPath();
-    const x=Math.random()*W,y=Math.random()*H,rr=10+Math.random()*46;
-    ctx.fillStyle=cols[i%cols.length];
-    ctx.arc(x,y,rr,0,Math.PI*2);ctx.fill();
-  }
-  ctx.globalAlpha=1;
-  // mystic ring
-  ctx.strokeStyle='#231307';ctx.lineWidth=8;
-  ctx.beginPath();ctx.arc(W/2,H/2,W/2-6,0,Math.PI*2);ctx.stroke();
-}
-function sizeFog(){
-  const s=wrap.clientWidth;
-  fog.width=s;fog.height=s;W=s;H=s;
-  paintFog(1);drew=false;hint.style.opacity='1';
-}
-function clip(){ // keep fog circular
-  ctx.globalCompositeOperation='destination-in';
-  ctx.beginPath();ctx.arc(W/2,H/2,W/2,0,Math.PI*2);ctx.fill();
-  ctx.globalCompositeOperation='source-over';
-}
-function erase(x,y){
-  ctx.globalCompositeOperation='destination-out';
-  ctx.beginPath();ctx.arc(x,y,Math.max(18,W*0.07),0,Math.PI*2);ctx.fill();
-  ctx.globalCompositeOperation='source-over';
-  if(!drew){drew=true;hint.style.opacity='0';}
-}
-function pos(e){
-  const r=fog.getBoundingClientRect();
-  const p=e.touches?e.touches[0]:e;
-  return [(p.clientX-r.left)*(W/r.width),(p.clientY-r.top)*(H/r.height)];
-}
-let down=false;
-fog.addEventListener('pointerdown',e=>{down=true;erase(...pos(e));});
-fog.addEventListener('pointermove',e=>{if(down){e.preventDefault();erase(...pos(e));}});
-window.addEventListener('pointerup',()=>down=false);
-
-/* time-decay: fog slowly seeps back, nudging re-reveal */
-setInterval(()=>{ if(drew){ paintFog(0.05); clip(); } },650);
-
-/* draw new card */
-document.getElementById('drawBtn').addEventListener('click',()=>{
-  renderCard();
-  sizeFog();
-});
-window.addEventListener('resize',()=>{ if(!drew) sizeFog(); });
-sizeFog();
-
-/* ===== orbit / solar positioning (circles only) ===== */
-function placeRing(sel,count,radiusPct,startDeg){
-  document.querySelectorAll(sel).forEach((el,i)=>{
-    const ang=(startDeg+ (360/count)*i)*Math.PI/180;
-    el.style.transform=`translate(${Math.cos(ang)*radiusPct}%,${Math.sin(ang)*radiusPct}%)`;
-  });
-}
-function layout(){
-  // node radius relative to its own size; use the orbit box
-  const orbit=document.getElementById('orbit');
-  const R=orbit.clientWidth*0.5*0.74;
-  document.querySelectorAll('#orbit .node').forEach((el,i)=>{
-    const ang=(-90+72*i)*Math.PI/180;
-    el.style.transform=`translate(${Math.cos(ang)*R}px,${Math.sin(ang)*R}px)`;
-  });
-  const solar=document.getElementById('solar');
-  const SR=solar.clientWidth*0.5*0.72;
-  document.querySelectorAll('#solar .moon').forEach((el,i)=>{
-    const ang=(-90+60*i)*Math.PI/180;
-    el.style.transform=`translate(${Math.cos(ang)*SR}px,${Math.sin(ang)*SR}px)`;
-  });
-}
-layout();window.addEventListener('resize',layout);
-
-/* ===== toast ===== */
-const toast=document.getElementById('toast');
-function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1900);}
-
-/* ===== copy / download skill files ===== */
-const diceSrc=document.getElementById('src-dice').textContent;
-const skillSrc=document.getElementById('src-skill').textContent;
-function download(name,text){
-  const b=new Blob([text],{type:'text/plain'});
-  const u=URL.createObjectURL(b);const a=document.createElement('a');
-  a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
-}
-document.getElementById('copySkill').addEventListener('click',async()=>{
-  try{await navigator.clipboard.writeText(skillSrc);showToast('SKILL.md הועתק ללוח');}
-  catch(e){download('SKILL.md',skillSrc);showToast('SKILL.md ירד');}
-});
-document.getElementById('dlSkill').addEventListener('click',()=>{download('SKILL.md',skillSrc);showToast('SKILL.md ירד');});
-document.getElementById('dlDice').addEventListener('click',()=>{download('dice.py',diceSrc);showToast('dice.py ירד');});
+async function getFile(k){try{const r=await fetch(FNAME[k],{cache:'no-store'});if(r.ok)return await r.text();}catch(e){}return FALLBACK[k];}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+document.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',async()=>{
+  const k=b.dataset.dl,text=await getFile(k);
+  const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a');a.href=url;a.download=FNAME[k];document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);toast('הורד: '+FNAME[k]);
+}));
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{
+  const k=b.dataset.copy,text=await getFile(k);
+  try{await navigator.clipboard.writeText(text);toast('הועתק: '+FNAME[k]);}
+  catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('הועתק: '+FNAME[k]);}
+}));
 </script>
 </body>
 </html>

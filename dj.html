@@ -4,84 +4,101 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>צד B — chaos-design</title>
-<meta name="description" content="המחשב הוא DJ שמנגן רק להיטים מוכרים. chaos-design מכריח אותו לנגן משהו שעוד לא שמעת. הורד את המחט, שמע מה יצא, וקח את הסקיל.">
+<meta name="description" content="המחשב הוא DJ שמנגן רק להיטים מוכרים. chaos-design מכריח אותו לנגן משהו שעוד לא שמעת. לחץ והחזק, שמע מה יצא, וקח את הסקיל.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* roll obeyed: LAYOUT full-bleed kinetic TYPE · INTERACTION press-and-hold (drop the needle)
-   CONTAINER ledger/tracklist rows · TYPE kinetic + serif display × monospace data hard clash
-   PALETTE paper cream + ink black, editorial · ANOMALY scale play (one thing absurdly large/tiny)
-   REFERENCE 1970s vinyl record sleeve · WILDCARD creative-seed overrides reference (the set that refuses the expected hit) */
-:root{--paper:#EFE7D6;--ink:#171410;--dim:#6f6757;--line:#171410;
+/* roll: LAYOUT full-bleed kinetic TYPE · INTERACTION press-and-hold (drop the needle) · CONTAINER tracklist rows
+   TYPE kinetic + serif display × mono clash · PALETTE cream + ink black editorial · ANOMALY scale play (one thing huge/tiny)
+   REFERENCE 1970s vinyl sleeve · WILDCARD seed overrides reference (a set that refuses the expected hit) */
+:root{--paper:#ECE3CE;--ink:#15120D;--dim:#6f6757;
   --serif:'Frank Ruhl Libre',serif;--body:'Heebo',sans-serif;--mono:'Space Mono',monospace;}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x:hidden;-webkit-text-size-adjust:100%}
 ::selection{background:var(--ink);color:var(--paper)}
 .mono{font-family:var(--mono)}
-.sleeve{max-width:780px;margin:0 auto;padding:0 clamp(16px,5vw,44px)}
-.panel{padding:clamp(36px,8vw,80px) 0}
-.panel + .panel{border-top:2px solid var(--line)}
+.sleeve{max-width:880px;margin:0 auto}
+.pad{padding-left:clamp(16px,5vw,48px);padding-right:clamp(16px,5vw,48px)}
+.panel{padding-top:clamp(30px,7vw,66px);padding-bottom:clamp(30px,7vw,66px);position:relative;overflow:hidden}
 
-/* editorial top strip */
-.strip{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-weight:700;
-  font-size:11.5px;padding:12px 0;border-bottom:2px solid var(--line)}
-.sidetag{font-family:var(--mono);font-weight:700;font-size:12px;border:2px solid var(--ink);padding:4px 12px;display:inline-block;margin-bottom:18px}
+.tiny{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:.02em}
+.serif{font-family:var(--serif);font-weight:900;line-height:.8}
+.sidetag{font-family:var(--mono);font-weight:700;font-size:12px;background:var(--ink);color:var(--paper);
+  padding:5px 12px;display:inline-block;transform:rotate(-1.5deg)}
 
-/* kinetic serif display, scale play */
-.disp{font-family:var(--serif);font-weight:900;line-height:.82}
-.disp .l{display:inline-block;animation:sway 3.4s ease-in-out infinite}
-@keyframes sway{0%,100%{transform:translateY(0)}50%{transform:translateY(-.05em)}}
-.colossal{font-size:clamp(72px,28vw,260px)}      /* the absurdly large thing */
-.h2{font-size:clamp(36px,11vw,88px)}
-.tiny{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--dim)}  /* the absurdly tiny thing */
-.lead{font-family:var(--body);font-weight:300;font-size:clamp(17px,4.5vw,24px);line-height:1.5;max-width:32ch;margin-top:20px}
-.lead b{font-weight:700}
+/* ---- HERO: big black slab, colossal word clipped at the edge (scale play) ---- */
+#hero{padding-top:0}
+.slab{background:var(--ink);color:var(--paper);padding:clamp(20px,5vw,40px) 0 clamp(8px,3vw,24px);position:relative;overflow:hidden}
+.slabtop{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(236,227,206,.3);
+  padding-bottom:10px;margin-bottom:clamp(10px,3vw,22px)}
+.slabtop .tiny{color:#a59c84}
+.colossal{font-family:var(--serif);font-weight:900;line-height:.74;color:var(--paper);
+  font-size:clamp(110px,40vw,360px);margin-right:-.06em;white-space:nowrap;transform:translateX(.04em)}
+.colossal .hit{-webkit-text-stroke:2px var(--paper);color:transparent}
+.vinyl-mini{position:absolute;top:clamp(8px,3vw,20px);left:clamp(8px,4vw,40px);width:clamp(54px,12vw,96px);height:auto;opacity:.92}
+.slabfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-top:6px}
+.slabfoot .big45{font-family:var(--mono);font-weight:700;font-size:clamp(13px,3.4vw,16px);color:var(--paper)}
+.lead{font-family:var(--body);font-weight:300;font-size:clamp(18px,5vw,27px);line-height:1.42;max-width:24ch;
+  margin-top:clamp(22px,6vw,40px)}
+.lead b{font-weight:900}
+.lead .huge1{font-family:var(--serif);font-weight:900;font-style:normal}
 
-/* hero: word + vinyl, scale clash */
-.hero{position:relative;display:grid;gap:6px}
-.hero .vinyl{position:absolute;left:-8%;top:8%;width:clamp(110px,34vw,260px);opacity:.9;animation:rot 14s linear infinite;z-index:-1}
-@keyframes rot{to{transform:rotate(360deg)}}
-.catrow{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--line);margin-top:24px;padding-top:10px}
-
-/* tracklist (CONTAINER ledger rows) */
-.tracks{font-family:var(--mono);margin-top:10px}
+/* ---- problem: side A tracklist ---- */
+.kick{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.h2{font-family:var(--serif);font-weight:900;font-size:clamp(44px,15vw,128px);line-height:.78}
+.h2 .sm{font-size:.42em;color:var(--dim)}
+.note{font-weight:300;font-size:clamp(15px,4vw,18px);line-height:1.5;max-width:40ch;color:#3c372c}
+.tracks{margin-top:18px;font-family:var(--mono)}
 .trk{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:baseline;
-  padding:13px 0;border-bottom:1px solid rgba(23,20,16,.28)}
-.trk .no{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--dim)}
-.trk .nm{font-family:var(--body);font-weight:700;font-size:clamp(15px,4vw,20px)}
+  padding:14px 0;border-bottom:1px solid rgba(21,18,13,.25)}
+.trk:first-child{border-top:3px solid var(--ink)}
+.trk .no{font-weight:700;font-size:13px;color:var(--dim)}
+.trk .nm{font-family:var(--body);font-weight:700;font-size:clamp(16px,4.4vw,22px)}
 .trk .nm small{display:block;font-weight:300;font-size:13px;color:var(--dim);font-family:var(--body);margin-top:2px}
-.trk .tm{font-family:var(--mono);font-weight:700;font-size:13px}
+.trk .tm{font-weight:700;font-size:13px}
+.trk.bonus .nm{color:var(--ink)} .trk.bonus .tm{text-decoration:line-through;color:var(--dim)}
 
-/* live demo: turntable, press & hold to drop the needle */
-#deck{text-align:center}
-.turn{position:relative;width:min(88vw,400px);margin:26px auto 0;aspect-ratio:1}
-.platter{position:absolute;inset:0;border-radius:50%;background:
-  repeating-radial-gradient(circle at 50% 50%, var(--ink) 0 1px, transparent 1px 4px);
-  border:3px solid var(--ink);transition:transform .3s}
-.platter.spin{animation:rot 2.2s linear infinite}
-.label{position:absolute;inset:30%;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
-  display:grid;place-items:center;padding:7%;z-index:2;overflow:hidden}
-.label .nowrap{opacity:0;transition:opacity .35s;text-align:start;width:100%}
-.label.show .nowrap{opacity:1}
-.label .lh{font-family:var(--mono);font-weight:700;font-size:9.5px;color:var(--dim);text-align:center;margin-bottom:5px}
-.label .lrow{display:flex;justify-content:space-between;gap:5px;font-size:8.7px;line-height:1.5}
-.label .lk{font-family:var(--mono);font-weight:700;color:var(--dim);white-space:nowrap}
-.label .lv{font-family:var(--body);font-weight:700;font-size:9.3px;text-align:start}
-.label .idle{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:900;
-  font-size:clamp(26px,8vw,42px);transition:opacity .3s}
-.label.show .idle{opacity:0}
-.arm{position:absolute;top:-3%;left:-3%;width:46%;transform-origin:88% 12%;transform:rotate(-26deg);
+/* B-side heading aligned hard left, scale clash */
+.alignL{text-align:left}
+
+/* ---- live demo ---- */
+#deck{background:var(--ink);color:var(--paper)}
+#deck .sidetag{background:var(--paper);color:var(--ink)}
+#deck .h2{color:var(--paper)}
+#deck .note{color:#cdc6b2}
+.demowrap{display:grid;gap:clamp(20px,5vw,34px);margin-top:24px;align-items:center}
+@media(min-width:720px){.demowrap{grid-template-columns:300px 1fr}}
+.turn{position:relative;width:min(74vw,300px);aspect-ratio:1;margin:0 auto}
+.platter{position:absolute;inset:0;border-radius:50%;
+  background:repeating-radial-gradient(circle at 50% 50%, #0a0907 0 1px, #1c1812 1px 3px);
+  border:3px solid var(--paper)}
+.platter.spin{animation:rot 2.4s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.plabel{position:absolute;inset:32%;border-radius:50%;background:var(--paper);color:var(--ink);
+  display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:clamp(22px,7vw,34px);z-index:2}
+.arm{position:absolute;top:-4%;right:-4%;width:48%;transform-origin:86% 14%;transform:rotate(34deg);
   transition:transform .5s cubic-bezier(.5,1.4,.5,1);z-index:3}
-.arm.down{transform:rotate(2deg)}
-.ring{position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:4}
-.holdbtn{margin-top:24px;font-family:var(--serif);font-weight:900;font-size:clamp(20px,5.5vw,28px);
-  background:var(--ink);color:var(--paper);border:none;padding:14px 42px;cursor:pointer;user-select:none;
+.arm.down{transform:rotate(-3deg)}
+.ring{position:absolute;inset:-2px;border-radius:50%;pointer-events:none;z-index:4}
+.holdbtn{display:block;width:100%;margin-top:18px;font-family:var(--serif);font-weight:900;font-size:clamp(19px,5vw,24px);
+  background:var(--paper);color:var(--ink);border:none;padding:14px;cursor:pointer;user-select:none;
   -webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s}
-.holdbtn.hold{transform:scale(.96)}
-.decknote{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:16px;line-height:1.6}
+.holdbtn.hold{transform:scale(.97)}
 
-/* take it */
+/* the RESULT card — changes face every roll (this is the whole point, made visible) */
+.result{position:relative;min-height:230px;padding:clamp(20px,5vw,32px);transition:background .25s, transform .25s;
+  background:#E5167B;color:#FFF3D6;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.result .rl{font-family:var(--mono);font-weight:700;font-size:11.5px;opacity:.85;margin-bottom:12px}
+.rrow{display:grid;grid-template-columns:5.5em 1fr;gap:10px;align-items:baseline;padding:7px 0;
+  border-top:1.5px solid currentColor}
+.rrow .rk{font-family:var(--mono);font-weight:700;font-size:11.5px;opacity:.8}
+.rrow .rv{font-family:var(--serif);font-weight:900;font-size:clamp(17px,4.8vw,25px);line-height:1.04}
+.result .rfoot{font-family:var(--body);font-weight:700;font-size:13px;margin-top:14px;opacity:.9}
+.demohint{font-family:var(--mono);font-size:12px;color:#cdc6b2;margin-top:18px;text-align:center;line-height:1.6}
+.demohint b{color:var(--paper)}
+
+/* ---- take ---- */
 .path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3.2vw,15px);display:inline-block;
   border:2px solid var(--ink);padding:9px 16px;margin:14px 0 26px}
 .acts{display:flex;flex-wrap:wrap;gap:14px}
@@ -89,55 +106,56 @@ body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x
   border:2px solid var(--ink);background:transparent;color:var(--ink);padding:13px 22px;transition:background .15s,color .15s,transform .12s}
 .btn:hover{background:var(--ink);color:var(--paper)}.btn:active{transform:translate(2px,2px)}
 .btn.solid{background:var(--ink);color:var(--paper)}.btn.solid:hover{opacity:.85}
-.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:30px 0;color:var(--ink)}
+.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:34px 0;color:var(--ink)}
 .switch a{color:var(--ink);font-weight:700;text-decoration:underline}
-footer{background:var(--ink);color:var(--paper);text-align:center;padding:42px 20px;font-family:var(--mono);font-size:12px;line-height:1.8}
-footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,52px);display:block;margin-bottom:10px}
+footer{background:var(--ink);color:var(--paper);text-align:center;padding:44px 20px;font-family:var(--mono);font-size:12px;line-height:1.8}
+footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(28px,10vw,64px);display:block;margin-bottom:10px;line-height:.85}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--paper);
   font-family:var(--mono);font-weight:700;font-size:13px;padding:13px 24px;z-index:99;transition:transform .35s}
 .toast.show{transform:translateX(-50%) translateY(0)}
-@media(prefers-reduced-motion:reduce){.disp .l,.vinyl,.platter.spin{animation:none}}
+@media(prefers-reduced-motion:reduce){.platter.spin{animation:none}}
 </style>
 </head>
 <body>
 <div class="sleeve">
 
   <!-- HERO -->
-  <section class="panel">
-    <div class="strip"><span>CHAOS-DESIGN</span><span>33⅓ RPM · גרסת ה-DJ</span></div>
-    <div class="hero">
-      <svg viewBox="0 0 100 100" class="vinyl" aria-hidden="true">
-        <circle cx="50" cy="50" r="48" fill="#171410"/>
-        <circle cx="50" cy="50" r="40" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
-        <circle cx="50" cy="50" r="32" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
-        <circle cx="50" cy="50" r="24" fill="none" stroke="#EFE7D6" stroke-width=".6" opacity=".5"/>
-        <circle cx="50" cy="50" r="15" fill="#EFE7D6"/><circle cx="50" cy="50" r="2" fill="#171410"/>
+  <section class="panel" id="hero">
+    <div class="slab">
+      <svg viewBox="0 0 100 100" class="vinyl-mini" aria-hidden="true">
+        <circle cx="50" cy="50" r="48" fill="#ECE3CE"/><circle cx="50" cy="50" r="40" fill="none" stroke="#15120D" stroke-width=".7"/>
+        <circle cx="50" cy="50" r="30" fill="none" stroke="#15120D" stroke-width=".7"/><circle cx="50" cy="50" r="14" fill="#15120D"/>
+        <circle cx="50" cy="50" r="2" fill="#ECE3CE"/>
       </svg>
-      <span class="sidetag">SIDE B · הצד שמסרב להיט</span>
-      <h1 class="disp colossal">צַד<br>בִּי</h1>
-      <p class="lead">המחשב הוא <b>DJ שמנגן רק להיטים</b> שכולם מכירים, כי זה בטוח. הכלי הזה מכריח אותו לנגן משהו שעוד לא שמעת. בכל פעם משהו טרי.</p>
-      <div class="catrow"><span class="tiny">CAT. NO. CHAOS-001</span><span class="tiny">A SKILL FOR CLAUDE CODE</span></div>
+      <div class="pad">
+        <div class="slabtop"><span class="tiny">CHAOS-DESIGN</span><span class="tiny">A SKILL FOR CLAUDE CODE</span></div>
+      </div>
+      <div class="colossal pad">צד<span class="hit"> בי</span></div>
+      <div class="pad"><div class="slabfoot"><span class="big45">33⅓ RPM · גרסת ה-DJ</span><span class="tiny">CAT. CHAOS-001</span></div></div>
+    </div>
+    <div class="pad">
+      <p class="lead">המחשב הוא <span class="huge1">DJ של חתונות</span>. מנגן רק להיטים שכולם מכירים, כי זה בטוח. הכלי הזה מכריח אותו לנגן <b>משהו שעוד לא שמעת.</b></p>
     </div>
   </section>
 
-  <!-- THE PROBLEM: side A, the same old hits -->
-  <section class="panel">
-    <span class="sidetag">SIDE A · אותם להיטים</span>
-    <h2 class="disp h2">כל DJ מנגן<br>אותו שיר</h2>
-    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:42ch">המחשב שולף תמיד את הלהיט הבטוח, הממוצע של כל מה ששמע. ולכן יוצא לך תמיד אותו דבר:</p>
+  <!-- PROBLEM: side A -->
+  <section class="panel pad">
+    <div class="kick"><span class="sidetag">SIDE A</span><span class="tiny">אותם להיטים, שוב ושוב</span></div>
+    <h2 class="h2">כולם<br>מנגנים<br>אותו<br><span class="sm">שיר.</span></h2>
+    <p class="note" style="margin-top:18px">המחשב שולף תמיד את הלהיט הבטוח, הממוצע של כל מה ששמע. ולכן יוצא לך תמיד בדיוק זה:</p>
     <div class="tracks">
       <div class="trk"><span class="no">A1</span><span class="nm">הכרטיס המעוגל</span><span class="tm">3:00</span></div>
       <div class="trk"><span class="no">A2</span><span class="nm">האימוג'י העצלן</span><span class="tm">2:48</span></div>
-      <div class="trk"><span class="no">A3</span><span class="nm">הכותרת באמצע + 3 בלוקים</span><span class="tm">4:12</span></div>
-      <div class="trk"><span class="no">A4</span><span class="nm">אותם צבעים, אותו סידור</span><span class="tm">3:33</span></div>
+      <div class="trk"><span class="no">A3</span><span class="nm">כותרת באמצע, שלושה בלוקים מתחת</span><span class="tm">4:12</span></div>
+      <div class="trk"><span class="no">A4</span><span class="nm">אותם צבעים, אותו סידור בדיוק</span><span class="tm">3:33</span></div>
     </div>
   </section>
 
-  <!-- THE METHOD: side B set list -->
-  <section class="panel">
-    <span class="sidetag">SIDE B · הסט החדש</span>
-    <h2 class="disp h2">חמישה<br>טראקים</h2>
-    <div class="tracks">
+  <!-- METHOD: side B -->
+  <section class="panel pad alignL">
+    <div class="kick" style="justify-content:flex-start"><span class="sidetag">SIDE B</span><span class="tiny">הסט שמסרב להיט</span></div>
+    <h2 class="h2" style="text-align:left">חמישה<br>טראקים</h2>
+    <div class="tracks" style="text-align:right" dir="rtl">
       <div class="trk"><span class="no">B1</span><span class="nm">ניצוץ<small>זורקים רעיון מטורף מהחיים</small></span><span class="tm">0:30</span></div>
       <div class="trk"><span class="no">B2</span><span class="nm">גלגול<small>הקובייה בוחרת סגנון, לא המחשב</small></span><span class="tm">0:45</span></div>
       <div class="trk"><span class="no">B3</span><span class="nm">בנייה<small>בונים בדיוק לפי מה שיצא, בלי לרמות</small></span><span class="tm">2:10</span></div>
@@ -146,30 +164,37 @@ footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,5
     </div>
   </section>
 
-  <!-- LIVE DEMO: drop the needle -->
-  <section class="panel" id="deck">
-    <span class="sidetag">נסה בעצמך · אמיתי</span>
-    <h2 class="disp h2">הורד את<br>המחט</h2>
-    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:38ch;margin:12px auto 0">לחץ והחזק כדי להוריד את המחט על התקליט. כשהיא נוחתת, שומעים מה יצא. כל פעם טראק אחר.</p>
-    <div class="turn">
-      <div class="platter" id="platter"></div>
-      <div class="label" id="label"><div class="idle">?</div><div class="nowrap" id="nowrap"></div></div>
-      <svg viewBox="0 0 100 100" class="arm" id="arm" aria-hidden="true">
-        <circle cx="86" cy="14" r="7" fill="none" stroke="#171410" stroke-width="3"/>
-        <line x1="86" y1="14" x2="30" y2="74" stroke="#171410" stroke-width="4" stroke-linecap="round"/>
-        <rect x="24" y="70" width="12" height="9" fill="#171410" transform="rotate(46 30 74)"/>
-      </svg>
-      <svg viewBox="0 0 100 100" class="ring" id="ring"><circle cx="50" cy="50" r="48.5" fill="none" stroke="#171410" stroke-width="3" stroke-dasharray="305" stroke-dashoffset="305" transform="rotate(-90 50 50)"/></svg>
+  <!-- LIVE DEMO -->
+  <section class="panel pad" id="deck">
+    <div class="kick"><span class="sidetag">נסה עכשיו</span><span class="tiny">אמיתי, לא הקלטה</span></div>
+    <h2 class="h2">הורד את<br>המחט</h2>
+    <p class="note">לחץ והחזק כדי להוריד את המחט. בכל פעם נופל <b>בריף עיצוב אחר</b>, ואתה רואה בעיניים איך הכרטיס משנה פרצוף. זה כל הסקיל, בקטן.</p>
+    <div class="demowrap">
+      <div>
+        <div class="turn">
+          <div class="platter" id="platter"></div>
+          <div class="plabel">B</div>
+          <svg viewBox="0 0 100 100" class="arm" id="arm" aria-hidden="true">
+            <circle cx="14" cy="14" r="7" fill="none" stroke="#ECE3CE" stroke-width="3"/>
+            <line x1="14" y1="14" x2="70" y2="72" stroke="#ECE3CE" stroke-width="4" stroke-linecap="round"/>
+            <rect x="64" y="68" width="12" height="9" fill="#ECE3CE" transform="rotate(-46 70 72)"/>
+          </svg>
+          <svg viewBox="0 0 100 100" class="ring" id="ring"><circle cx="50" cy="50" r="49" fill="none" stroke="#ECE3CE" stroke-width="3" stroke-dasharray="308" stroke-dashoffset="308" transform="rotate(-90 50 50)"/></svg>
+        </div>
+        <button class="holdbtn" id="holdbtn">לחץ והחזק</button>
+      </div>
+      <div>
+        <div class="result" id="result"></div>
+        <p class="demohint"><b>אותו אתר. כל פעם פרצוף אחר.</b><br>אין שתי תוצאות זהות. זה ההבדל בין ממוצע למשהו חי.</p>
+      </div>
     </div>
-    <button class="holdbtn" id="holdbtn">לחץ והחזק</button>
-    <p class="decknote mono">כל שליפה אחרת מהקודמת. אותה בקשה, טראק אחר בכל פעם.</p>
   </section>
 
-  <!-- TAKE IT -->
-  <section class="panel" id="take">
-    <span class="sidetag">קח את התקליט</span>
-    <h2 class="disp h2">העתק. הדבק.<br>נגן בעצמך.</h2>
-    <p class="lead" style="font-weight:300;font-size:clamp(15px,3.9vw,18px);max-width:42ch">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
+  <!-- TAKE -->
+  <section class="panel pad">
+    <div class="kick"><span class="sidetag">קח את התקליט</span></div>
+    <h2 class="h2">העתק.<br>נגן בעצמך.</h2>
+    <p class="note" style="margin-top:14px">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
     <span class="path">~/.claude/skills/chaos-design/</span>
     <div class="acts">
       <button class="btn solid" id="copySkill">העתק SKILL.md</button>
@@ -179,11 +204,11 @@ footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,5
     <p class="tiny" style="margin-top:22px">דורש גם את creative-seeds (טראק הפתיחה). אותה ערכה אנטי-AI.</p>
   </section>
 
-  <p class="switch">בא לך לטעום את אותו רעיון במטבח אחר? <a href="chef.html">עבור לגרסת השף ←</a></p>
+  <p class="switch">בא לך אותו רעיון במטבח אחר? <a href="chef.html">עבור לגרסת השף ←</a></p>
 </div>
 
 <footer>
-  <span class="fbig">תפסיק לנגן את אותו שיר.</span>
+  <span class="fbig">תפסיק לנגן<br>אותו שיר.</span>
   chaos-design · a Claude Code skill by Mosh Frenkel<br>
   התקליט הזה הוקלט על ידי הסקיל עצמו
 </footer>
@@ -191,47 +216,46 @@ footer .fbig{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,5
 <div class="toast" id="toast">הועתק</div>
 
 <script>
-const DECKS={
- LAYOUT:["collage / overlapping torn pieces, intentional mess","hard diagonal grid (everything skewed on one axis)","scattered absolute 'playground' (objects float in space)","editorial spread with marginalia & pull-quotes in the gutter","full-bleed kinetic TYPE as the layout (words ARE the design)","radial / circular orbit around one center point","anarchic masonry (wildly unequal blocks, no rhythm)","spatial map / blueprint / floor-plan","brutal asymmetric split (70/30, one side invades the other)","horizontal sideways flow (a journey across a wall)"],
- INTERACTION:["physics: drag & throw elements, they collide with walls","audio-reactive: generated sound drives the visuals","scroll-jack scenes that morph between fixed states","cursor-as-tool (marker / spotlight / magnet / eraser)","gyro / tilt parallax (phone movement moves the world)","press-and-hold to reveal / charge / unlock","draw-to-reveal (user paints content into view)","time-decay: elements mutate, rot, or grow over time","beat / pulse sync (everything breathes on one clock)","hover-distortion / liquid warp on contact"],
- CONTAINER:["torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames","ticket stub / boarding pass","speech bubbles","terminal / window chrome","tags & labels on strings","handwritten list / checklist","ledger / table / spreadsheet rows","NO container - bleeds onto the page"],
- TYPE:["one giant word per screen, oversized, overflowing the frame","serif display + monospace data, hard clash","vertical / rotated running text","kinetic type (letters move, bob, react)","ransom-note (mixed sizes/weights/styles per word)","variable-weight that thickens on scroll/hover","outline type + solid type interleaved","ALL-CAPS condensed poster type vs tiny captions"],
- PALETTE:["strict duotone (2 colors only, no greys)","near-monochrome + one violently hot accent","intentional clash / 'ugly on purpose' but confident","black & white + a single spot color","risograph 2-spot overprint (offset, misregistered)","neon on near-black","paper cream + ink black, editorial","high-saturation tropical, no dark mode"],
- ANOMALY:["everything tilted exactly 3 degrees","no horizontal lines anywhere - all edges curve or slant","only circles & arcs, zero rectangles","elements allowed to overflow & be clipped by the frame edge","a recurring hand-drawn mascot / scribble appears throughout","one element is ALWAYS moving / alive on every frame","perfect symmetry is forbidden - every pairing is uneven","a deliberate 'broken' glitch that is clearly intentional","scale play - one thing absurdly large or tiny vs the rest","one common color (e.g. blue) is banned from the whole piece"],
- REFERENCE:["Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map","punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern design","tarot card / occult plate","hospital heart-rate monitor","vaporwave shopping mall directory","broadsheet newspaper front page","museum wall / gallery label","retro arcade cabinet / game UI"],
- WILDCARD:["do the deliberate OPPOSITE of one rolled card","merge two cards from one deck into a single hybrid","let the creative-seed override the REFERENCE entirely","add a recurring mascot/character that reacts to the user","one section loudly BREAKS the ANOMALY law, on purpose","collapse it all into ONE uninterrupted scene, no sections","ban the most obvious color for this brand","smash a second LAYOUT into the first halfway through"]
-};
-const WEB=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
-const HE={LAYOUT:"פריסה",INTERACTION:"אינטראקציה",CONTAINER:"מיכל",TYPE:"טיפוגרפיה",PALETTE:"פלטה",ANOMALY:"חוק חריג",REFERENCE:"השראה",WILDCARD:"קלף פראי"};
-const BAN=["כרטיסים מעוגלים בשורה","ירו + 3 בלוקים סימטריים","אימוג'י או אייקון גנרי","כותרת+פסקה במרכז שחוזרת","עמודות שוות סימטריות","אותו עיגול פינות על הכל","לוק סטוק גנרי במרכז"];
+/* ===== plain-Hebrew result decks (no English codes shown) ===== */
+const LAYOUT=["קולאז' של פיסות קרועות","רשת אלכסונית חדה","אובייקטים מרחפים בחלל","מילים ענקיות שהן העיצוב","מסלול מעגלי סביב מרכז","בלוקים בגדלים פרועים","זרימה הצידה לאורך קיר","שרטוט / מפה","חלוקה אסימטרית 70 ל-30"];
+const REF=["פוסטר מחאה ברוטליסטי","עטיפת תקליט שנות 70","מפת רכבת תחתית","זין פאנקי מצולם","פתק כופר חתוך","ממפיס שנות ה-80","קלף טארוט","מוניטור דופק","קניון וייפורווייב","שער עיתון ענק","תווית מוזיאון","ארקייד רטרו"];
+const ANOM=["הכל מוטה 3 מעלות","בלי קו ישר אחד, הכל מתעקל","רק עיגולים, אפס מלבנים","אלמנטים חורגים ונחתכים בקצה","קמע מצויר ביד חוזר לאורך","משהו תמיד זז על המסך","אסור סימטריה, כל זוג לא שווה","גליץ' שבור בכוונה","משחק גדלים קיצוני","צבע אחד אסור לגמרי"];
+const FACES=[
+ {bg:'#E5167B',fg:'#FFF3D6'},{bg:'#018F6F',fg:'#F2EAD0'},{bg:'#2A2BD6',fg:'#EFE7FF'},
+ {bg:'#FF5A1F',fg:'#1A1208'},{bg:'#FFB23E',fg:'#171410'},{bg:'#15120D',fg:'#ECE3CE'},{bg:'#E01B1B',fg:'#EDE3CC'}
+];
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const nowrap=document.getElementById('nowrap');
-function spin(){
-  let h='<div class="lh">NOW PLAYING</div>';
-  WEB.forEach(k=>{h+=`<div class="lrow"><span class="lk">${k}</span><span class="lv">${pick(DECKS[k])}</span></div>`;});
-  nowrap.innerHTML=h;
+const result=document.getElementById('result');
+let N=0,lastFace=-1;
+function roll(){
+  N++; let fi; do{fi=Math.floor(Math.random()*FACES.length);}while(fi===lastFace); lastFace=fi;
+  const f=FACES[fi], ang=(Math.random()*5-2.5).toFixed(2);
+  const aligns=['right','center','left'], al=aligns[Math.floor(Math.random()*3)];
+  result.style.background=f.bg; result.style.color=f.fg; result.style.transform=`rotate(${ang}deg)`; result.style.textAlign=al;
+  result.innerHTML=`<div class="rl">גלגול #${N} · הקובייה ביקשה לבנות:</div>
+    <div class="rrow"><span class="rk">פריסה</span><span class="rv">${pick(LAYOUT)}</span></div>
+    <div class="rrow"><span class="rk">מראה כמו</span><span class="rv">${pick(REF)}</span></div>
+    <div class="rrow"><span class="rk">חוק ברזל</span><span class="rv">${pick(ANOM)}</span></div>
+    <div class="rfoot">${N===1?'זה רק גלגול אחד. תלחץ עוד.':'שונה לגמרי מהקודם, נכון?'}</div>`;
 }
-spin();
+roll();
 
-/* press & hold = drop the needle (INTERACTION) */
+/* ===== press & hold = drop the needle ===== */
 const btn=document.getElementById('holdbtn'),arm=document.getElementById('arm'),platter=document.getElementById('platter'),
-  label=document.getElementById('label'),ring=document.querySelector('#ring circle');
-const LEN=305;let raf,start=null,done=false;const DUR=950;
-function frame(t){if(start===null)start=t;const p=Math.min(1,(t-start)/DUR);
-  ring.style.strokeDashoffset=LEN*(1-p);
+  ring=document.querySelector('#ring circle');
+const LEN=308;let raf,start=null,charging=false;const DUR=850;
+function frame(t){if(start===null)start=t;const p=Math.min(1,(t-start)/DUR);ring.style.strokeDashoffset=LEN*(1-p);
   if(p>=1){finish();return;}raf=requestAnimationFrame(frame);}
-function begin(e){e.preventDefault();if(done)reset();btn.classList.add('hold');btn.textContent='מוריד מחט...';
+function begin(e){e.preventDefault();charging=true;btn.classList.add('hold');btn.textContent='מוריד מחט...';
   arm.classList.add('down');platter.classList.add('spin');start=null;raf=requestAnimationFrame(frame);}
-function finish(){done=true;cancelAnimationFrame(raf);spin();label.classList.add('show');
-  btn.classList.remove('hold');btn.textContent='נגן טראק חדש';}
-function cancel(){if(done){btn.textContent='נגן טראק חדש';return;}cancelAnimationFrame(raf);ring.style.strokeDashoffset=LEN;
+function finish(){charging=false;cancelAnimationFrame(raf);roll();btn.classList.remove('hold');btn.textContent='נגן טראק חדש';
+  setTimeout(()=>{ring.style.strokeDashoffset=LEN;arm.classList.remove('down');platter.classList.remove('spin');},500);}
+function cancel(){if(!charging)return;charging=false;cancelAnimationFrame(raf);ring.style.strokeDashoffset=LEN;
   arm.classList.remove('down');platter.classList.remove('spin');btn.classList.remove('hold');btn.textContent='לחץ והחזק';}
-function reset(){done=false;label.classList.remove('show');ring.style.strokeDashoffset=LEN;}
-btn.addEventListener('pointerdown',begin);
-btn.addEventListener('pointerup',cancel);
-btn.addEventListener('pointerleave',cancel);
-btn.addEventListener('contextmenu',e=>e.preventDefault());
+btn.addEventListener('pointerdown',begin);btn.addEventListener('pointerup',cancel);
+btn.addEventListener('pointerleave',cancel);btn.addEventListener('contextmenu',e=>e.preventDefault());
 
+/* ===== copy ===== */
 const toast=document.getElementById('toast');
 function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1900);}
 document.getElementById('copySkill').addEventListener('click',async()=>{

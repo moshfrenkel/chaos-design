@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>מדריך הקומות — מנוע הכאוס</title>
+<meta name="description" content="מנוע שמגניב את ההחלטה העיצובית מה-AI. גלגל בעצמך, וראה איך אותו תוכן נבנה אחרת בכל פעם.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe7d6;        /* cream */
+    --paper-2:#e6dcc4;
+    --ink:#16140f;          /* near-black ink */
+    --ink-soft:#4a4438;
+    --tape:rgba(22,20,15,.10);
+    --line:#16140f;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--paper);color:var(--ink)}
+  body{
+    font-family:'Heebo',sans-serif;
+    overflow-x:hidden;
+    /* printed-paper grain: halftone of ink, no color */
+    background-image:
+      radial-gradient(var(--tape) .6px, transparent .7px),
+      radial-gradient(var(--tape) .6px, transparent .7px);
+    background-size:7px 7px, 7px 7px;
+    background-position:0 0, 3.5px 3.5px;
+  }
+  .ink-thick{font-family:'Suez One',serif}
+  .frank{font-family:'Frank Ruhl Libre',serif}
+  .mono{font-family:'Courier Prime',monospace}
+
+  /* ===== inverted rain: ink ticks drifting UP (seed #5) ===== */
+  #rain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.5}
+  .drop{position:absolute;width:1px;height:14px;background:var(--ink);animation:up linear infinite}
+  @keyframes up{from{transform:translateY(110vh)}to{transform:translateY(-20vh)}}
+
+  /* ===== the board ===== */
+  main{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:0 16px 90px}
+
+  /* directory plate header */
+  header.plate{
+    position:relative;margin:18px 0 8px;border:3px solid var(--ink);
+    background:var(--paper-2);transform:rotate(-3deg);transform-origin:right top;
+    padding:18px 16px 20px;
+  }
+  header.plate::before{content:"LEVEL 1 — אתה נמצא כאן";position:absolute;top:-13px;right:14px;
+    background:var(--ink);color:var(--paper);font:700 12px/1 'Courier Prime',monospace;
+    letter-spacing:.5px;padding:5px 9px}
+  .ransom{line-height:.96;margin:6px 0 0;font-weight:900}
+  .ransom span{display:inline-block;padding:0 .04em}
+  .w1{font-family:'Suez One',serif;font-size:clamp(40px,13vw,108px)}
+  .w2{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:clamp(34px,11vw,92px);transform:rotate(2deg)}
+  .w3{font-family:'Heebo';font-weight:900;font-size:clamp(30px,9vw,78px);background:var(--ink);color:var(--paper);transform:rotate(-2deg);padding:0 .08em}
+  .w4{font-family:'Courier Prime',monospace;font-weight:700;font-size:clamp(26px,7vw,60px);text-decoration:underline 4px}
+  .subline{margin:14px 0 0;max-width:46ch;font-size:clamp(15px,4.4vw,20px);font-weight:400;line-height:1.5}
+  .subline b{font-weight:900}
+  .arrow-you{position:absolute;left:10px;bottom:-6px;width:120px;height:60px}
+
+  /* legend / directory index = the navigation (not a scroll menu) */
+  nav.legend{display:flex;flex-wrap:wrap;gap:8px;margin:22px 2px 8px;align-items:center}
+  nav.legend .lg-lbl{font:700 12px/1 'Courier Prime',monospace;border-bottom:2px solid var(--ink);padding-bottom:3px;margin-left:4px}
+  nav.legend a{
+    text-decoration:none;color:var(--ink);font-family:'Courier Prime',monospace;font-weight:700;
+    font-size:13px;border:2px solid var(--ink);padding:7px 11px;background:var(--paper);
+    display:inline-flex;gap:7px;align-items:center;transition:transform .12s, background .12s
+  }
+  nav.legend a .num{background:var(--ink);color:var(--paper);width:20px;height:20px;display:grid;place-items:center;font-size:11px}
+  nav.legend a:nth-child(2){transform:rotate(-2deg)}
+  nav.legend a:nth-child(4){transform:rotate(2deg)}
+  nav.legend a:hover{background:var(--ink);color:var(--paper)}
+  nav.legend a:hover .num{background:var(--paper);color:var(--ink)}
+
+  section{position:relative;margin:54px 0;scroll-margin-top:14px}
+  .wing-tag{font:700 12px/1 'Courier Prime',monospace;display:inline-block;background:var(--ink);color:var(--paper);padding:6px 10px;transform:rotate(-3deg)}
+
+  /* ====== ZONE 2: THE LIVE ROLLER (heart) ====== */
+  #roller .stage{
+    border:3px solid var(--ink);background:var(--paper-2);position:relative;
+    padding:16px 14px 22px;transform:rotate(3deg);overflow:hidden;min-height:520px
+  }
+  #roller h2{margin:.1em 0 .1em;font-family:'Suez One',serif;font-size:clamp(26px,8vw,48px);line-height:1}
+  #roller .lead{margin:0 0 14px;max-width:40ch;font-size:15px;line-height:1.45}
+  .lever-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
+  button.lever{
+    cursor:pointer;border:3px solid var(--ink);background:var(--ink);color:var(--paper);
+    font-family:'Suez One',serif;font-size:clamp(20px,6vw,30px);padding:12px 22px;
+    transform:rotate(-3deg);transition:transform .08s;display:inline-flex;align-items:center;gap:12px
+  }
+  button.lever:active{transform:rotate(-3deg) scale(.95) translateY(2px)}
+  button.lever .knob{width:30px;height:30px;display:block}
+  .rollcount{font:700 13px/1.3 'Courier Prime',monospace;opacity:.8}
+
+  /* the demo canvas where same content is re-skeletoned */
+  .demo{position:relative;border:2px dashed var(--ink);min-height:330px;padding:10px;overflow:hidden}
+  .demo .nb{position:absolute;font-family:'Courier Prime',monospace;font-size:10px;top:4px;left:8px;opacity:.55;z-index:0}
+  /* sticky note container — bespoke, taped, rotated, NO rounded card */
+  .note{position:absolute;background:var(--paper);border:1.5px solid var(--ink);
+    box-shadow:3px 4px 0 rgba(22,20,15,.18);padding:10px 12px;max-width:62%}
+  .note::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-4deg);
+    width:54px;height:16px;background:var(--tape);border:1px dashed rgba(22,20,15,.3)}
+  .note.float-up{animation:floatUp .7s cubic-bezier(.4,0,.2,1) forwards}
+  @keyframes floatUp{to{transform:translateY(-360px) rotate(-12deg);opacity:0}}
+  .note .k{font:700 10px/1 'Courier Prime',monospace;background:var(--ink);color:var(--paper);padding:3px 5px;display:inline-block;margin-bottom:6px}
+  .note .title-demo{line-height:1}
+  .note .cta-demo{display:inline-block;margin-top:8px;border:2px solid var(--ink);padding:5px 10px;font-weight:900;font-size:13px}
+
+  /* the printed receipt of the roll */
+  .receipt{margin-top:14px;background:var(--paper);border:2px solid var(--ink);
+    font-family:'Courier Prime',monospace;font-size:12px;line-height:1.7;
+    padding:12px 13px 16px;transform:rotate(-2deg);position:relative}
+  .receipt::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:10px;
+    background:
+      linear-gradient(45deg,transparent 50%,var(--paper) 50%) repeat-x,
+      linear-gradient(-45deg,transparent 50%,var(--paper) 50%) repeat-x;
+    background-size:12px 12px}
+  .receipt h3{margin:0 0 8px;font-family:'Courier Prime',monospace;font-size:12px;border-bottom:1px dashed var(--ink);padding-bottom:6px;letter-spacing:.5px}
+  .receipt .row{display:flex;gap:8px;justify-content:space-between;border-bottom:1px dotted rgba(22,20,15,.35)}
+  .receipt .row b{font-weight:700;white-space:nowrap}
+  .receipt .row span{text-align:left;direction:ltr}
+  .receipt .ban{margin-top:8px;color:var(--ink-soft);font-size:11px}
+
+  /* ====== ZONE 3: WHY — scrawled manifesto, asymmetric ====== */
+  #why .scrawl{position:relative;padding:8px 4px}
+  #why .big{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:clamp(28px,9vw,66px);line-height:1.02;max-width:18ch}
+  #why .big em{font-style:normal;background:var(--ink);color:var(--paper);transform:rotate(-2deg);display:inline-block;padding:0 .06em}
+  #why .ave{margin:24px 0 0;margin-right:auto;max-width:30ch;border-right:4px solid var(--ink);padding:4px 14px;
+    font-size:16px;line-height:1.55;transform:rotate(2deg);width:fit-content}
+  #why .ave .mono{display:block;margin-top:8px;font-size:12px;opacity:.7}
+
+  /* ====== ZONE 4: LINEAGE — pinned ticket stubs, scattered playground ====== */
+  #proof .yard{position:relative;min-height:430px;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:24px 0}
+  .stub{position:absolute;background:var(--paper);border:2px solid var(--ink);padding:10px 12px 12px;width:170px;
+    box-shadow:2px 3px 0 rgba(22,20,15,.2)}
+  .stub::before{content:"";position:absolute;width:10px;height:10px;border:2px solid var(--ink);border-radius:50%;
+    background:var(--paper-2);top:8px;right:8px}
+  .stub .n{font:700 11px/1 'Courier Prime',monospace;opacity:.6}
+  .stub .nm{font-family:'Suez One',serif;font-size:18px;line-height:1.05;margin:4px 0}
+  .stub .d{font-size:12px;line-height:1.35}
+
+  /* ====== ZONE 5: CLAIM COUNTER — take the engine ====== */
+  #take .booth{border:3px solid var(--ink);background:var(--ink);color:var(--paper);transform:rotate(-3deg);
+    padding:20px 16px 24px;position:relative}
+  #take .booth::before{content:"PICK-UP / קח את המנוע";position:absolute;top:-13px;right:16px;background:var(--paper);color:var(--ink);
+    font:700 12px/1 'Courier Prime',monospace;padding:5px 9px;border:2px solid var(--ink)}
+  #take h2{font-family:'Suez One',serif;font-size:clamp(26px,8vw,46px);margin:4px 0 6px;line-height:1}
+  #take p.l{max-width:42ch;font-size:15px;line-height:1.5;margin:0 0 18px;opacity:.92}
+  .files{display:flex;flex-direction:column;gap:14px}
+  .file{border:2px solid var(--paper);background:transparent;padding:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .file:nth-child(2){transform:rotate(1.5deg)}
+  .file .fname{font-family:'Courier Prime',monospace;font-weight:700;font-size:clamp(16px,5vw,22px);flex:1 1 140px}
+  .file .fname small{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:3px;font-family:'Heebo'}
+  .file .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{cursor:pointer;font-family:'Courier Prime',monospace;font-weight:700;font-size:13px;padding:9px 13px;
+    border:2px solid var(--paper);background:var(--paper);color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+  .btn.ghost{background:transparent;color:var(--paper)}
+  .btn:active{transform:translateY(1px)}
+  .howto{margin-top:20px;border-top:1px dashed var(--paper);padding-top:14px;font-family:'Courier Prime',monospace;font-size:12px;line-height:1.8;opacity:.92}
+  .howto code{background:var(--paper);color:var(--ink);padding:2px 6px}
+  .howto .step{display:block}
+
+  /* mascot — bespoke ink creature with a downward umbrella (seed #5) */
+  #mascot{position:fixed;width:96px;height:120px;z-index:6;pointer-events:none;left:14px;bottom:14px;
+    transition:transform .25s ease}
+  #mascot .speech{position:absolute;bottom:104px;right:-6px;background:var(--paper);border:2px solid var(--ink);
+    font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;padding:5px 8px;white-space:nowrap;
+    opacity:0;transition:opacity .2s;transform:rotate(-3deg)}
+  #mascot.talk .speech{opacity:1}
+
+  footer{margin-top:40px;text-align:center;font-family:'Courier Prime',monospace;font-size:12px;opacity:.7;line-height:1.7}
+  footer span{display:inline-block;transform:rotate(-2deg)}
+
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) rotate(-2deg);background:var(--ink);color:var(--paper);
+    font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;padding:10px 16px;z-index:30;border:2px solid var(--paper);
+    opacity:0;pointer-events:none;transition:opacity .2s, top .2s}
+  .toast.show{opacity:1;top:24px}
+
+  @media (min-width:760px){
+    #roller .stage{min-height:600px}
+    #mascot{width:130px;height:160px;left:24px;bottom:24px}
+    #mascot .speech{bottom:140px}
+    .note{max-width:46%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .drop{animation:none;display:none}
+    .note.float-up{animation:none;opacity:0}
+  }
+</style>
+</head>
+<body>
+<div id="rain" aria-hidden="true"></div>
+
+<main>
+  <!-- ======= LEVEL 1: YOU ARE HERE ======= -->
+  <header class="plate">
+    <h1 class="ransom" aria-label="מנוע שגונב החלטות מה-AI">
+      <span class="w1">מנוע</span>
+      <span class="w2">שגונב</span>
+      <span class="w3">החלטות</span>
+      <span class="w4">מה-AI.</span>
+    </h1>
+    <p class="subline">כל AI מצייר את אותו דבר: כותרת באמצע, שלושה כרטיסים, אימוג'י. המנוע הזה <b>מוציא לו את ההגה מהידיים</b> ומגלגל קובייה במקום. אותו בריף, שלד אחר בכל פעם.</p>
+    <svg class="arrow-you" viewBox="0 0 120 60" fill="none" stroke="#16140f" stroke-width="3" aria-hidden="true">
+      <path d="M8 8 C 40 4, 70 20, 96 44" stroke-linecap="round"/>
+      <path d="M96 44 L 82 40 M96 44 L 92 30" stroke-linecap="round"/>
+    </svg>
+  </header>
+
+  <!-- ======= LEGEND = NAVIGATION ======= -->
+  <nav class="legend" aria-label="מדריך הקומות">
+    <span class="lg-lbl">מדריך:</span>
+    <a href="#roller"><span class="num">1</span> חדר הגלגול</a>
+    <a href="#why"><span class="num">2</span> למה זה עובד</a>
+    <a href="#proof"><span class="num">3</span> מה כבר נבנה</a>
+    <a href="#take"><span class="num">4</span> קח את המנוע</a>
+  </nav>
+
+  <!-- ======= ZONE 1: THE LIVE ROLLER ======= -->
+  <section id="roller" aria-labelledby="roller-h">
+    <span class="wing-tag">חנות 1 · חדר הגלגול</span>
+    <div class="stage">
+      <h2 id="roller-h">משוך את הידית.</h2>
+      <p class="lead">למטה יושב <b>אותו תוכן בדיוק</b> — כותרת, משפט, כפתור, שלוש עובדות. כל גלגול בונה אותו מחדש בשלד אחר לגמרי, ומדפיס לך את הקלפים שיצאו. זה לא רשימת מילים. זה המנוע רץ.</p>
+      <div class="lever-wrap">
+        <button class="lever" id="rollBtn" aria-label="גלגל מחדש">
+          <svg class="knob" viewBox="0 0 30 30" fill="none" stroke="#efe7d6" stroke-width="2.4" aria-hidden="true">
+            <rect x="4" y="4" width="22" height="22" rx="2"/>
+            <circle cx="10" cy="10" r="1.8" fill="#efe7d6" stroke="none"/>
+            <circle cx="20" cy="10" r="1.8" fill="#efe7d6" stroke="none"/>
+            <circle cx="15" cy="15" r="1.8" fill="#efe7d6" stroke="none"/>
+            <circle cx="10" cy="20" r="1.8" fill="#efe7d6" stroke="none"/>
+            <circle cx="20" cy="20" r="1.8" fill="#efe7d6" stroke="none"/>
+          </svg>
+          גלגל
+        </button>
+        <span class="rollcount" id="rollCount">גלגול #0 — לחץ והכל מתפרק ונבנה מחדש</span>
+      </div>
+
+      <div class="demo" id="demo">
+        <span class="nb" id="nbLabel">// אותו תוכן, שלד #0</span>
+      </div>
+
+      <div class="receipt" id="receipt" aria-live="polite">
+        <h3>&gt;&gt; CHAOS ROLL — קבלה</h3>
+        <div id="receiptRows"><div class="row"><b>מצב</b><span>press the lever</span></div></div>
+        <div class="ban">x ללא אימוג'י · ללא כרטיסים מעוגלים · ללא כותרת-במרכז שחוזרת</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= ZONE 2: WHY ======= -->
+  <section id="why" aria-labelledby="why-h">
+    <span class="wing-tag">חנות 2 · למה זה עובד</span>
+    <div class="scrawl">
+      <p class="big" id="why-h">AI לא <em>משוגע</em>. הוא <em>ממוצע</em>. וזו בדיוק הבעיה.</p>
+      <div class="ave">
+        מודל מייצר תמיד את הבחירה הכי סבירה הבאה. הכי סביר = הכי שחוק. לכן אם <b>אני</b> בוחר את השלד, אני אבחר את הממוצע. הפתרון: לקחת ממני את הבחירה ולתת לקובייה.
+        <span class="mono">randomizer + ban-list + self-audit ≥ 8/10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= ZONE 3: LINEAGE / PROOF ======= -->
+  <section id="proof" aria-labelledby="proof-h">
+    <span class="wing-tag">חנות 3 · מה כבר נבנה</span>
+    <h2 id="proof-h" class="frank" style="font-weight:900;font-size:clamp(22px,7vw,40px);margin:10px 0 0;transform:rotate(-2deg)">שישה אתרים. שש פרדיגמות. אותו מנוע.</h2>
+    <div class="yard" id="yard" aria-label="שישה תוצרים שנולדו מהמנוע"></div>
+  </section>
+
+  <!-- ======= ZONE 4: CLAIM COUNTER ======= -->
+  <section id="take" aria-labelledby="take-h">
+    <span class="wing-tag">חנות 4 · קופת האיסוף</span>
+    <div class="booth">
+      <h2 id="take-h">קח את המנוע איתך.</h2>
+      <p class="l">שני קבצים. שמים אותם בתיקיית <span class="mono">~/.claude/skills/chaos-design/</span>, וכל בקשת עיצוב מגלגלת קובייה לפני שהיא בונה. חינם, בלי תלות בכלום.</p>
+      <div class="files">
+        <div class="file">
+          <div class="fname">SKILL.md
+            <small>השיטה: מתי לירות, איך לגלגל, חמשת השלבים, שער ה-self-audit.</small>
+          </div>
+          <div class="acts">
+            <button class="btn" data-dl="skill">הורד</button>
+            <button class="btn ghost" data-copy="skill">העתק</button>
+          </div>
+        </div>
+        <div class="file">
+          <div class="fname">dice.py
+            <small>הקובייה עצמה: כל החפיסות, ה-ban-list, וההגרלה לכל מדיום.</small>
+          </div>
+          <div class="acts">
+            <button class="btn" data-dl="dice">הורד</button>
+            <button class="btn ghost" data-copy="dice">העתק</button>
+          </div>
+        </div>
+      </div>
+      <div class="howto">
+        <span class="step">$ <code>mkdir -p ~/.claude/skills/chaos-design</code></span>
+        <span class="step">$ <code>mv SKILL.md dice.py ~/.claude/skills/chaos-design/</code></span>
+        <span class="step">$ <code>python ~/.claude/skills/chaos-design/dice.py web</code></span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>נבנה ע"י המנוע של עצמו · גלגול: masonry+playground · sticky-notes · ransom · cream&amp;ink · tilt 3° · mall-directory</span>
+  </footer>
+</main>
+
+<!-- mascot: ink creature holding an upside-down umbrella (rain falls UP) -->
+<div id="mascot" aria-hidden="true">
+  <div class="speech" id="mascotSpeech">תגלגל אותי.</div>
+  <svg viewBox="0 0 96 120" fill="none" stroke="#16140f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- umbrella opening DOWNWARD -->
+    <path d="M20 70 Q48 86 76 70" fill="#efe7d6"/>
+    <path d="M20 70 Q34 64 48 70 Q62 64 76 70" />
+    <line x1="48" y1="70" x2="48" y2="40"/>
+    <path d="M48 40 q-6 0 -6 6" />
+    <!-- body blob -->
+    <path d="M30 40 Q30 12 48 12 Q66 12 66 40 Q66 56 48 56 Q30 56 30 40 Z" fill="#efe7d6"/>
+    <!-- eyes (follow cursor) -->
+    <circle class="eye" cx="42" cy="34" r="4.5" fill="#efe7d6"/>
+    <circle class="eye" cx="56" cy="34" r="4.5" fill="#efe7d6"/>
+    <circle class="pupil" cx="42" cy="34" r="2" fill="#16140f" stroke="none"/>
+    <circle class="pupil" cx="56" cy="34" r="2" fill="#16140f" stroke="none"/>
+    <!-- little legs -->
+    <line x1="42" y1="56" x2="40" y2="64"/>
+    <line x1="54" y1="56" x2="56" y2="64"/>
+  </svg>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====================================================================
+   The dice — a faithful JS port of dice.py's web decks + ban-list.
+   The live roller uses REAL rolls; nothing here is faked.
+==================================================================== */
+const DECKS = {
+  LAYOUT:[
+    "collage / overlapping torn pieces","hard diagonal grid","scattered absolute 'playground'",
+    "editorial spread + marginalia","full-bleed kinetic TYPE","radial / circular orbit",
+    "anarchic masonry (unequal blocks)","spatial map / blueprint","brutal asymmetric split (70/30)",
+    "horizontal sideways flow","single column shoved to one side","staircase / stepped cascade",
+    "layered z-stack, peeking from behind","timeline / ledger top-to-bottom","split-screen, hard seam",
+    "exploded diagram with leader lines","corkboard with connecting strings","fold-out / accordion panels",
+    "one giant object, captions orbit it","a grid that progressively breaks down"
+  ],
+  INTERACTION:[
+    "physics: drag & throw","audio-reactive","scroll-jack morph scenes","cursor-as-tool",
+    "gyro / tilt parallax","press-and-hold to reveal","draw-to-reveal","time-decay: elements mutate",
+    "beat / pulse sync","hover-distortion / liquid warp","type-to-unlock content","climb/step scroll, counted & gated",
+    "shake / swipe to re-roll","flashlight reveal in the dark","stack-and-collapse","toggle inverts the world",
+    "reveal gated by a question","magnet cursor attract/repel","pull-to-tear the page","live click-census of the visitor"
+  ],
+  CONTAINER:[
+    "torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames",
+    "ticket stub / boarding pass","speech bubbles","terminal / window chrome",
+    "tags & labels on strings","handwritten checklist","ledger / spreadsheet rows","NO container - bleeds",
+    "stamped library index cards","envelopes, some sealed","price tags / auction paddles","film-strip frames",
+    "wax-sealed scrolls","blister packs / specimen jars","cut-out coupon, scissor lines","chalkboard panels",
+    "perforated receipt slips","picture-frame mats","manila folders / dossier tabs"
+  ],
+  TYPE:[
+    "one giant word per screen","serif display + monospace clash","vertical / rotated text",
+    "kinetic type (letters move)","ransom-note (mixed sizes/weights)","variable-weight on scroll",
+    "outline + solid interleaved","ALL-CAPS condensed vs tiny captions","hand-lettered / scrawled marker",
+    "type on a curved path","censored / redacted blocks","typewriter ledger figures","justified solid text-mass",
+    "huge numerals, words as footnotes","letterpress emboss / deboss","stencil / spray-stencil",
+    "colliding kerning chaos","mirrored / reversed motif","annotated like museum labels","Hebrew display vs Latin mono"
+  ],
+  PALETTE:[
+    "strict duotone","near-mono + one hot accent","'ugly on purpose' but confident",
+    "black & white + one spot color","risograph 2-spot overprint","neon on near-black",
+    "paper cream + ink black, editorial","high-saturation tropical","sepia aged-archive","blueprint cyan on navy",
+    "newsprint grey + red stamp","green phosphor terminal","pastel + one acid accent","metallic ink on matte",
+    "thermal-receipt black on off-white","chalk on blackboard","infrared false-color heat","clay earth + one ochre",
+    "blown-out photocopy grayscale","two clashing brights, no neutrals"
+  ],
+  ANOMALY:[
+    "everything tilted exactly 3°","no horizontal lines — all curve/slant","only circles & arcs",
+    "elements overflow & clip the frame","a recurring hand-drawn mascot","one element always moving",
+    "perfect symmetry forbidden","a deliberate intentional 'glitch'","absurd scale play","one common color banned",
+    "hard-aligned to one edge, vast void","one element breaks a rigid grid","content hidden until unlocked",
+    "a running census of your actions","the center stays empty, always","every corner torn or burnt",
+    "every element casts one hard shadow","a whispered confession in the margins","only handmade imperfect lines",
+    "a deliberate 'out of order' dead-zone"
+  ],
+  REFERENCE:[
+    "Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map",
+    "punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern","tarot / occult plate",
+    "hospital heart-rate monitor","vaporwave mall directory","broadsheet newspaper front page",
+    "museum wall / gallery label","retro arcade cabinet UI","botanical field-guide plate","vintage passport stamp page",
+    "seed-packet / apothecary label","stock-exchange ticker board","elevator inspection certificate",
+    "cassette tape J-card","boxing / wrestling fight poster","architectural blueprint","lost-and-found corkboard",
+    "vintage board-game box"
+  ],
+  WILDCARD:[
+    "do the OPPOSITE of one card","merge two cards into a hybrid","let the seed override REFERENCE",
+    "add a mascot that reacts to the user","one section BREAKS the ANOMALY on purpose",
+    "collapse to ONE scene, no sections","ban the most obvious color","smash a 2nd LAYOUT in halfway",
+    "hand one deck's job to another deck","build the card you most fear","first action re-rolls an axis live",
+    "make the REFERENCE absurdly literal","a rule you must 'earn' past","hide a confession in the piece",
+    "price / score everything as a motif","invert the medium's convention","a foreign REFERENCE crashes in",
+    "the piece counts / watches you","double-ANOMALY: two laws at once","strip all color, then flood it back"
+  ]
+};
+const WEB_ORDER=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+/* ---- sample content that gets re-skeletoned every roll (stays identical) ---- */
+const SAMPLE = {
+  kicker:"מושפיט · השבוע",
+  title:"תזוזה אחת ביום.",
+  line:"משחק קטן למשפחה, חמש דקות, בלי ציוד.",
+  cta:"קח את המשחק",
+  facts:["5 דק'","0 ציוד","כל הגילאים"]
+};
+
+const demo = document.getElementById('demo');
+const nbLabel = document.getElementById('nbLabel');
+
+function noteEl(html, x, y, rot, w){
+  const n=document.createElement('div');
+  n.className='note';
+  n.style.left=x; n.style.top=y; n.style.transform=`rotate(${rot}deg)`;
+  if(w) n.style.maxWidth=w;
+  n.innerHTML=html;
+  return n;
+}
+function clearDemoWithDecay(cb){
+  const old=[...demo.querySelectorAll('.note')];
+  if(!old.length){cb();return;}
+  old.forEach((n,i)=>{ n.style.animationDelay=(i*40)+'ms'; n.classList.add('float-up'); });
+  setTimeout(cb, 380);
+}
+
+/* skeleton variants — distinct geometry; same SAMPLE arranged differently */
+function renderSkeleton(roll, n){
+  const S=SAMPLE, L=roll.LAYOUT, T=roll.TYPE;
+  const titleFont = T.includes("serif")? "'Frank Ruhl Libre',serif"
+                  : T.includes("giant")? "'Suez One',serif"
+                  : "'Suez One',serif";
+  const tSize = T.includes("giant")? "clamp(34px,11vw,64px)" : "clamp(22px,7vw,40px)";
+  const titleStyle=`font-family:${titleFont};font-size:${tSize};font-weight:900`;
+
+  const variants=[
+    ()=>{ // anarchic masonry: unequal blocks, offset
+      demo.appendChild(noteEl(`<span class="k">TITLE</span><div class="title-demo" style="${titleStyle}">${S.title}</div>`, "4%","6%", -3, "58%"));
+      demo.appendChild(noteEl(`<span class="k">KICKER</span><div style="font-weight:700;font-size:13px">${S.kicker}</div>`, "63%","10%", 4, "32%"));
+      demo.appendChild(noteEl(`<div style="font-size:14px;line-height:1.4">${S.line}</div><span class="cta-demo">${S.cta}</span>`, "30%","46%", 2, "55%"));
+      demo.appendChild(noteEl(`<div class="mono" style="font-size:12px">${S.facts.join("&nbsp;·&nbsp;")}</div>`, "6%","78%", -2, "60%"));
+    },
+    ()=>{ // playground scatter
+      demo.appendChild(noteEl(`<span class="k">KICKER</span><div style="font-weight:700;font-size:13px">${S.kicker}</div>`, "8%","8%", -6, "30%"));
+      demo.appendChild(noteEl(`<div class="title-demo" style="${titleStyle}">${S.title}</div>`, "34%","30%", 3, "60%"));
+      demo.appendChild(noteEl(`<span class="cta-demo">${S.cta}</span>`, "10%","52%", 8, "auto"));
+      demo.appendChild(noteEl(`<div style="font-size:14px;line-height:1.4">${S.line}</div>`, "52%","62%", -4, "44%"));
+      demo.appendChild(noteEl(`<div class="mono" style="font-size:12px">${S.facts.join("<br>")}</div>`, "70%","16%", 5, "26%"));
+    },
+    ()=>{ // brutal 70/30 split
+      demo.appendChild(noteEl(`<span class="k">TITLE</span><div class="title-demo" style="${titleStyle}">${S.title}</div><div style="font-size:14px;margin-top:6px;line-height:1.4">${S.line}</div><span class="cta-demo">${S.cta}</span>`, "3%","8%", -2, "62%"));
+      demo.appendChild(noteEl(`<span class="k">KICKER</span><div style="font-weight:700;font-size:13px">${S.kicker}</div><hr style="border:none;border-top:1px dashed #16140f;margin:8px 0"><div class="mono" style="font-size:12px">${S.facts.join("<br>")}</div>`, "68%","6%", 3, "28%"));
+    },
+    ()=>{ // radial-ish: title center, facts orbit
+      demo.appendChild(noteEl(`<div class="title-demo" style="${titleStyle}">${S.title}</div>`, "26%","36%", -3, "48%"));
+      demo.appendChild(noteEl(`<div style="font-weight:700;font-size:13px">${S.kicker}</div>`, "8%","8%", 6, "30%"));
+      demo.appendChild(noteEl(`<span class="cta-demo">${S.cta}</span>`, "62%","12%", -7, "auto"));
+      demo.appendChild(noteEl(`<div class="mono" style="font-size:12px">${S.facts[0]}</div>`, "6%","70%", 4, "auto"));
+      demo.appendChild(noteEl(`<div class="mono" style="font-size:12px">${S.facts[1]}</div>`, "44%","78%", -5, "auto"));
+      demo.appendChild(noteEl(`<div class="mono" style="font-size:12px">${S.facts[2]}</div>`, "74%","66%", 3, "auto"));
+      demo.appendChild(noteEl(`<div style="font-size:14px;line-height:1.4">${S.line}</div>`, "58%","44%", 2, "38%"));
+    },
+    ()=>{ // diagonal cascade
+      const items=[
+        `<span class="k">KICKER</span><div style="font-weight:700;font-size:13px">${S.kicker}</div>`,
+        `<div class="title-demo" style="${titleStyle}">${S.title}</div>`,
+        `<div style="font-size:14px;line-height:1.4">${S.line}</div>`,
+        `<span class="cta-demo">${S.cta}</span> &nbsp; <span class="mono" style="font-size:12px">${S.facts.join(" · ")}</span>`
+      ];
+      items.forEach((h,i)=> demo.appendChild(noteEl(h, (4+i*18)+"%", (4+i*20)+"%", (i%2?3:-3), "56%")));
+    }
+  ];
+  const idx = (L.charCodeAt(0)+L.length+n) % variants.length;
+  variants[idx]();
+}
+
+/* ---- receipt printer ---- */
+const receiptRows=document.getElementById('receiptRows');
+function printReceipt(roll, mut){
+  let html="";
+  WEB_ORDER.forEach(k=>{ html+=`<div class="row"><b>${k}</b><span>${roll[k]}</span></div>`; });
+  if(mut) html+=`<div class="row"><b>MUTATION</b><span>${mut}</span></div>`;
+  receiptRows.innerHTML=html;
+}
+
+/* ---- the roll ---- */
+let count=0;
+const rollBtn=document.getElementById('rollBtn');
+const rollCount=document.getElementById('rollCount');
+function doRoll(){
+  count++;
+  const roll={};
+  WEB_ORDER.forEach(k=> roll[k]=rnd(DECKS[k]));
+  let mut=null;
+  if(Math.random()<0.5){
+    const k=rnd(WEB_ORDER.filter(a=>a!=="WILDCARD"));
+    mut = Math.random()<0.5
+      ? `DOUBLE ${k}: דו-קיום עם '${rnd(DECKS[k])}'`
+      : `${rnd(["INVERT","MUTE","EXAGGERATE"])} ${k}`;
+  }
+  rollCount.textContent=`גלגול #${count} — שלד ${roll.LAYOUT.split(' ')[0]} · ${roll.CONTAINER.split(' ')[0]}`;
+  nbLabel.textContent=`// אותו תוכן, שלד #${count}`;
+  clearDemoWithDecay(()=>{
+    renderSkeleton(roll, count);
+    printReceipt(roll, mut);
+  });
+  mascotReact();
+}
+rollBtn.addEventListener('click', doRoll);
+
+/* ====================================================================
+   inverted rain (seed #5): ink ticks drift UP
+==================================================================== */
+(function rain(){
+  const r=document.getElementById('rain');
+  const N = window.innerWidth<640? 26 : 50;
+  for(let i=0;i<N;i++){
+    const d=document.createElement('div');
+    d.className='drop';
+    d.style.left=(Math.random()*100)+'%';
+    const dur=3.5+Math.random()*4;
+    d.style.animationDuration=dur+'s';
+    d.style.animationDelay=(-Math.random()*dur)+'s';
+    d.style.height=(8+Math.random()*16)+'px';
+    d.style.opacity=(0.25+Math.random()*0.5);
+    r.appendChild(d);
+  }
+})();
+
+/* ====================================================================
+   lineage stubs (scattered playground)
+==================================================================== */
+const LINEAGE=[
+  {n:"#01",nm:"NEON / GLITCH",d:"טק זוהר, רעש דיגיטלי, הכל רוטט."},
+  {n:"#02",nm:"DARK LIQUID",d:"נוזל כהה שזורם מתחת לאצבע."},
+  {n:"#03",nm:"MAGAZINE",d:"קולאז' מגזין בהיר, גרירה פיזיקלית."},
+  {n:"#04",nm:"LIVE STAGE",d:"במה חיה עם גרוב לטיני מסונתז."},
+  {n:"#05",nm:"HEART MONITOR",d:"מוניטור ביו-מטרי, פעימה אמיתית."},
+  {n:"#06",nm:"THIS BOARD",d:"מדריך קניון על נייר. אתה כאן."}
+];
+const yard=document.getElementById('yard');
+const pos=[
+  {l:"2%",t:"6%",r:-4},{l:"58%",t:"2%",r:5},{l:"30%",t:"30%",r:-2},
+  {l:"4%",t:"56%",r:3},{l:"64%",t:"48%",r:-5},{l:"36%",t:"68%",r:4}
+];
+LINEAGE.forEach((s,i)=>{
+  const el=document.createElement('div');
+  el.className='stub';
+  el.style.left=pos[i].l; el.style.top=pos[i].t; el.style.transform=`rotate(${pos[i].r}deg)`;
+  el.innerHTML=`<div class="n">${s.n}</div><div class="nm">${s.nm}</div><div class="d">${s.d}</div>`;
+  yard.appendChild(el);
+});
+
+/* ====================================================================
+   mascot: eyes follow cursor, reacts to roll
+==================================================================== */
+const mascot=document.getElementById('mascot');
+const pupils=[...mascot.querySelectorAll('.pupil')];
+const eyeBase=[{x:42,y:34},{x:56,y:34}];
+window.addEventListener('pointermove',e=>{
+  const r=mascot.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height*0.32;
+  const ang=Math.atan2(e.clientY-cy, e.clientX-cx);
+  pupils.forEach((p,i)=>{
+    p.setAttribute('cx', eyeBase[i].x+Math.cos(ang)*2.2);
+    p.setAttribute('cy', eyeBase[i].y+Math.sin(ang)*2.2);
+  });
+});
+let talkT;
+function mascotSay(txt){
+  document.getElementById('mascotSpeech').textContent=txt;
+  mascot.classList.add('talk');
+  clearTimeout(talkT);
+  talkT=setTimeout(()=>mascot.classList.remove('talk'), 1800);
+}
+function mascotReact(){
+  mascot.style.transform='rotate(-10deg) translateY(-6px) scale(.94)';
+  setTimeout(()=>mascot.style.transform='', 260);
+  mascotSay(rnd(["שלד חדש.","אותו תוכן. אחר לגמרי.","שוב!","ככה שוברים תבנית.","קובייה לא משקרת."]));
+}
+setTimeout(()=>mascotSay("תמשוך את הידית →"), 1200);
+
+/* ====================================================================
+   take the engine — embedded files, download + copy (self-contained)
+==================================================================== */
+const FILES={
+skill:`---
+name: chaos-design
+description: Anti-template visual engine for ANY expressive visual deliverable - websites, landing pages, presentations/decks, images, posters, carousels, stories, thumbnails, social graphics, and video/reels/ads. Forces genuinely different, non-generic results every run by rolling structural constraints instead of letting the model fall back to its "average" (card grids, emoji, centered hero, symmetric stock look).
+---
+
+# Chaos Design
+
+An AI defaults to templates because it generates from the statistical **average** of what it has seen. "Rounded card + emoji + centered hero" is always the next-most-likely choice. Real chaos will not happen if *I* choose the structure, because I will choose the average. So this skill **takes the structural decision away from the model** and hands it to a randomizer + a ban-list + a self-audit.
+
+## When it fires
+Before producing ANY expressive visual: site, page, deck/presentation, image, poster, carousel, story, thumbnail, social graphic, or video. Skip only for **data-precise** outputs where correctness beats style - functional dashboards, real charts, data tables.
+
+## The method - run it in order, every time
+
+### 1. Seed the mind
+Run the \`creative-seeds\` skill first (this skill assumes it). Pick ONE seed and translate it into a literal **mechanic / motif**, not a mood.
+
+### 2. Pick the medium, then roll the dice
+    python "$HOME/.claude/skills/chaos-design/dice.py" <medium>
+    # medium = web | deck | image | video | social   (Windows: %USERPROFILE%\\.claude\\...)
+Each medium rolls its own decks. It returns one card per deck plus the hard ban-list. The same brief produces a different scaffold every run. You must obey the roll, even when it is uncomfortable. Re-roll only if a card is technically impossible, never just because it is hard.
+
+### 3. Build against the roll
+- REFERENCE anchors the look to something that is NOT a default web/app/stock thing.
+- CONTAINER replaces "the card" / "the bullet list".
+- ANOMALY is one law the entire piece obeys with discipline.
+- INTERACTION / MOTION / SHOT is the single signature behavior or framing.
+
+### 4. Hard rules (on top of the roll)
+- Ban-list from dice.py is law. No emoji / icon-fonts / stickers - every decorative element is bespoke art / inline SVG. No stacked rounded cards. No centered-hero+3.
+- No two adjacent sections/slides/shots share an archetype.
+- Mobile-first for any screen output; enhance up with min-width.
+- Self-contained index.html for web, opens automatically, real CTAs.
+
+### 5. Self-audit gate (score >= 8/10 before showing)
+Hunt your own AI tells, fix, regenerate the offending part. Rounded-card grid? Emoji? Centered title+paragraph repeated? Two neighboring sections with the same archetype? Perfect symmetry unjustified? Did I obey every rolled card?
+
+## Pairs with
+\`creative-seeds\` (step 1) · \`image-generation\` · \`commercial-director\` · \`anti-ai-linter\`.
+`,
+dice:`#!/usr/bin/env python3
+# Chaos Design dice - externalizes structural choices away from the model's "average",
+# for ANY visual medium. Run:  python dice.py [medium] [N]
+#   medium = web | deck | image | video | social   (default web)
+#   N      = number of independent rolls            (default 1)
+import random, sys
+
+DECKS = {
+  "TYPE": [
+    "one giant word per screen, oversized, overflowing the frame",
+    "serif display + monospace data, hard clash",
+    "vertical / rotated running text",
+    "kinetic type (letters move, bob, react)",
+    "ransom-note (mixed sizes/weights/styles per word)",
+    "variable-weight that thickens on scroll/hover",
+    "outline type + solid type interleaved",
+    "ALL-CAPS condensed poster type vs tiny captions",
+  ],
+  "PALETTE": [
+    "strict duotone (2 colors only, no greys)",
+    "near-monochrome + one violently hot accent",
+    "intentional clash / 'ugly on purpose' but confident",
+    "black & white + a single spot color",
+    "risograph 2-spot overprint (offset, misregistered)",
+    "neon on near-black",
+    "paper cream + ink black, editorial",
+    "high-saturation tropical, no dark mode",
+  ],
+  "ANOMALY": [
+    "everything tilted exactly %d degrees" % random.choice([2,3,4,-3,6]),
+    "no horizontal lines anywhere - all edges curve or slant",
+    "only circles & arcs, zero rectangles",
+    "elements allowed to overflow & be clipped by the frame edge",
+    "a recurring hand-drawn mascot / scribble appears throughout",
+    "one element is ALWAYS moving / alive on every frame",
+    "perfect symmetry is forbidden - every pairing is uneven",
+    "a deliberate 'broken' glitch that is clearly intentional",
+    "scale play - one thing absurdly large or tiny vs the rest",
+    "one common color (e.g. blue) is banned from the whole piece",
+  ],
+  "REFERENCE": [
+    "Swiss brutalist protest poster",
+    "1970s vinyl record sleeve",
+    "subway / transit map",
+    "punk photocopied zine",
+    "kidnapper ransom note",
+    "Memphis / 80s postmodern design",
+    "tarot card / occult plate",
+    "hospital heart-rate monitor",
+    "vaporwave shopping mall directory",
+    "broadsheet newspaper front page",
+    "museum wall / gallery label",
+    "retro arcade cabinet / game UI",
+  ],
+  "LAYOUT": [
+    "collage / overlapping torn pieces, intentional mess",
+    "hard diagonal grid (everything skewed on one axis)",
+    "scattered absolute 'playground' (objects float in space)",
+    "editorial spread with marginalia & pull-quotes in the gutter",
+    "full-bleed kinetic TYPE as the layout (words ARE the design)",
+    "radial / circular orbit around one center point",
+    "anarchic masonry (wildly unequal blocks, no rhythm)",
+    "spatial map / blueprint / floor-plan",
+    "brutal asymmetric split (70/30, one side invades the other)",
+    "horizontal sideways flow (a journey across a wall)",
+  ],
+  "CONTAINER": [
+    "torn / ripped paper edges", "sticky notes (rotated, taped)",
+    "polaroid photo frames", "ticket stub / boarding pass",
+    "speech bubbles", "terminal / window chrome",
+    "tags & labels on strings", "handwritten list / checklist",
+    "ledger / table / spreadsheet rows", "NO container - bleeds onto the page",
+  ],
+  "INTERACTION": [
+    "physics: drag & throw elements, they collide with walls",
+    "audio-reactive: generated sound drives the visuals",
+    "scroll-jack scenes that morph between fixed states",
+    "cursor-as-tool (marker / spotlight / magnet / eraser)",
+    "gyro / tilt parallax (phone movement moves the world)",
+    "press-and-hold to reveal / charge / unlock",
+    "draw-to-reveal (user paints content into view)",
+    "time-decay: elements mutate, rot, or grow over time",
+    "beat / pulse sync (everything breathes on one clock)",
+    "hover-distortion / liquid warp on contact",
+  ],
+  "SLIDE": [
+    "one-word slides, zero bullets ever",
+    "oversized numbers / stats as the whole slide",
+    "full-bleed image slides alternating with pure-type slides",
+    "manifesto slides (a single bold sentence, huge)",
+    "asymmetric data slides, content shoved to one edge",
+    "a running visual motif that mutates slide to slide",
+  ],
+  "SHOT": [
+    "extreme macro close-up", "dutch / tilted angle",
+    "flat-lay top-down", "silhouette / hard backlight",
+    "double-exposure", "wide frame with vast negative space",
+    "fisheye / lens distortion", "hard direct-flash snapshot",
+    "off-center portrait, subject pushed to the edge",
+    "impossible scale (subject tiny or giant in the scene)",
+  ],
+  "SUBJECT": [
+    "single hero object, isolated, huge",
+    "human cropped hard (only hands / eyes / motion)",
+    "texture IS the subject (skin, fabric, surface)",
+    "color-isolation (one colored thing, rest desaturated)",
+    "motion-blur / long exposure energy",
+    "cut-out collage / mixed media",
+    "surreal juxtaposition (two things that don't belong)",
+    "repetition of one element into a pattern",
+  ],
+  "MOTION": [
+    "whip-pan hard cuts", "match-cut morphs between shots",
+    "single unbroken one-take drift", "glitch / datamosh transitions",
+    "freeze-frame punches with text stabs", "speed-ramp (slow then snap fast)",
+    "kinetic text landing on the beat", "jump-cut staccato rhythm",
+    "parallax layers sliding at different speeds", "light & shadow as the transition",
+  ],
+  "WILDCARD": [
+    "do the deliberate OPPOSITE of one rolled card",
+    "merge two cards from one deck into a single hybrid",
+    "let the creative-seed override the REFERENCE entirely",
+    "add a recurring mascot/character that reacts to the user",
+    "one section loudly BREAKS the ANOMALY law, on purpose",
+    "collapse it all into ONE uninterrupted scene, no sections",
+    "ban the most obvious color for this brand",
+    "smash a second LAYOUT into the first halfway through",
+  ],
+}
+
+MEDIA = {
+  "web":    ["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
+  "deck":   ["SLIDE","LAYOUT","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
+  "image":  ["SHOT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
+  "video":  ["MOTION","SHOT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
+  "social": ["LAYOUT","SUBJECT","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"],
+}
+
+BAN = [
+  "rounded-rectangle cards stacked/gridded in a row or column",
+  "hero / opener followed by 3 symmetric feature blocks",
+  "ANY emoji, icon-font, sticker, or dingbat - draw bespoke SVG / art instead",
+  "a centered title + paragraph (or bulleted list), repeated frame after frame",
+  "equal-width columns / evenly-spaced symmetric grids",
+  "the same uniform corner-radius / spacing on everything",
+  "generic stock-photo look, centered subject, flat even lighting",
+]
+
+MUTATORS = [
+  ("INVERT",     "do the deliberate opposite of the {k} card"),
+  ("MUTE",       "drop the {k} card entirely; force another axis to carry its job"),
+  ("EXAGGERATE", "push the {k} card to an absurd, uncomfortable extreme"),
+]
+def roll(i, medium):
+  print(f"========== ROLL {i}  [{medium}] ==========")
+  for k in MEDIA[medium]:
+    print(f"  {k:12} -> {random.choice(DECKS[k])}")
+  if random.random() < 0.5:
+    k = random.choice([a for a in MEDIA[medium] if a != "WILDCARD"])
+    if random.random() < 0.5:
+      print(f"  MUTATION     -> DOUBLE {k}: force it to coexist with '{random.choice(DECKS[k])}'")
+    else:
+      name, txt = random.choice(MUTATORS)
+      print(f"  MUTATION     -> {name} {k}: " + txt.format(k=k))
+  else:
+    print("  MUTATION     -> (none this roll)")
+  print()
+
+if __name__ == "__main__":
+  args = sys.argv[1:]
+  medium = "web"; n = 1
+  for a in args:
+    if a in MEDIA: medium = a
+    elif a.isdigit(): n = int(a)
+  for i in range(1, n + 1):
+    roll(i, medium)
+  print("---- HARD BAN-LIST (auto-fail if present) ----")
+  for b in BAN: print("  x " + b)
+  print("\\nObey the roll. No two sections/slides/shots alike. Mobile-first for screens. RTL Hebrew. Bespoke art only.")
+`
+};
+const FNAME={skill:"SKILL.md",dice:"dice.py"};
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1700);
+}
+/* pull the real sibling files from the server (always current); fall back to embedded */
+async function getFile(key){
+  try{ const r=await fetch(FNAME[key],{cache:'no-store'}); if(r.ok) return await r.text(); }catch(e){}
+  return FILES[key];
+}
+document.querySelectorAll('[data-dl]').forEach(b=>{
+  b.addEventListener('click',async()=>{
+    const key=b.dataset.dl;
+    const text=await getFile(key);
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=FNAME[key]; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('הורד: '+FNAME[key]);
+    mascotSay("יאללה, בנה משהו.");
+  });
+});
+document.querySelectorAll('[data-copy]').forEach(b=>{
+  b.addEventListener('click',async()=>{
+    const key=b.dataset.copy;
+    const text=await getFile(key);
+    try{ await navigator.clipboard.writeText(text); toast('הועתק: '+FNAME[key]); }
+    catch(e){
+      const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); ta.remove(); toast('הועתק: '+FNAME[key]);
+    }
+  });
+});
+
+/* first roll so the demo is alive on arrival */
+doRoll();
+</script>
+</body>
+</html>

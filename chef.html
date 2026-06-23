@@ -8,244 +8,244 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;800;900&family=Secular+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* roll obeyed: LAYOUT collage/torn mess · INTERACTION press-and-hold reveal · CONTAINER ledger/receipt rows
-   TYPE kinetic · PALETTE near-mono cream+violent red · ANOMALY recurring hand-drawn chef mascot
+/* roll: LAYOUT collage/torn mess · INTERACTION press-and-hold reveal · CONTAINER ledger/receipt rows
+   TYPE kinetic · PALETTE near-mono cream + VIOLENT red · ANOMALY recurring hand-drawn chef mascot
    REFERENCE Swiss brutalist protest poster · WILDCARD one uninterrupted scene, no sections */
-:root{--paper:#EDE3CC;--ink:#15120B;--red:#E01B1B;--smudge:#cfc3a4;
+:root{--paper:#E8DCBF;--ink:#120F08;--red:#E60E16;
   --disp:'Secular One',sans-serif;--body:'Heebo',sans-serif;--mono:'Space Mono',monospace;}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-  background-image:radial-gradient(circle at 20% 10%, rgba(0,0,0,.04) 0 1px, transparent 1px),radial-gradient(circle at 70% 60%, rgba(0,0,0,.03) 0 1px, transparent 1px);
-  background-size:7px 7px,11px 11px}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);overflow-x:hidden;-webkit-text-size-adjust:100%;
+  background-image:repeating-linear-gradient(0deg,transparent 0 6px,rgba(0,0,0,.014) 6px 7px)}
 ::selection{background:var(--red);color:var(--paper)}
 .mono{font-family:var(--mono)}
-.scene{max-width:760px;margin:0 auto;padding:0 clamp(16px,5vw,40px)}
+/* ONE continuous scene, no section cards (WILDCARD) */
+.scroll{max-width:820px;margin:0 auto;padding:0 clamp(14px,4.5vw,40px)}
+.beat{padding:clamp(26px,6vw,52px) 0;position:relative}
+.rule{height:5px;background:var(--ink);margin:0 calc(-1*clamp(14px,4.5vw,40px))}
+.rule.red{background:var(--red)}
+.rule.thin{height:2px}
 
-/* one continuous scene, brutalist rhythm */
-.block{padding:clamp(34px,8vw,72px) 0;border-bottom:3px solid var(--ink)}
-.block:last-of-type{border-bottom:none}
-.stamp{display:inline-block;font-family:var(--mono);font-weight:700;font-size:12px;
-  background:var(--ink);color:var(--paper);padding:6px 12px;transform:rotate(-2deg);margin-bottom:18px}
+.disp{font-family:var(--disp);line-height:.78;letter-spacing:0}
+.mega{font-size:clamp(64px,21vw,200px)}
+.h2{font-size:clamp(40px,13vw,108px);line-height:.8}
+.red{color:var(--red)}.cream{color:var(--paper)}
+.stamp{font-family:var(--mono);font-weight:700;font-size:12px;background:var(--ink);color:var(--paper);
+  padding:6px 13px;display:inline-block;transform:rotate(-2deg)}
 .stamp.red{background:var(--red)}
+.outline{-webkit-text-stroke:2.5px var(--ink);color:transparent}
 
-/* kinetic brutalist type */
-.kin{font-family:var(--disp);line-height:.82;letter-spacing:0;text-transform:none}
-.kin .l{display:inline-block;animation:kb 2.8s ease-in-out infinite}
-@keyframes kb{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-.04em) rotate(-1deg)}}
-.mega{font-size:clamp(58px,19vw,150px)}
-.big{font-size:clamp(34px,10vw,78px)}
-.red{color:var(--red)}
-.uline{box-shadow:inset 0 -.16em 0 var(--red)}
+/* hero: type overflowing & clipped at the frame edge */
+#hero{padding-top:clamp(18px,5vw,40px)}
+.bartop{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-weight:700;
+  font-size:11.5px;padding-bottom:10px}
+.megawrap{position:relative;margin:6px 0}
+.megawrap .mega{white-space:nowrap}
+.megawrap .clip{margin-right:-14vw}            /* runs off the edge on purpose */
+.chef{position:absolute;pointer-events:none}
+.chef.c1{right:-3vw;top:-6vw;width:clamp(74px,22vw,150px);transform:rotate(9deg)}
+.lead{font-weight:300;font-size:clamp(19px,5.4vw,30px);line-height:1.36;max-width:21ch;margin-top:clamp(18px,5vw,30px)}
+.lead b{font-weight:900}.lead .red{font-weight:900}
 
-/* hero */
-#top{padding-top:clamp(28px,7vw,56px)}
-.topbar{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);
-  font-weight:700;font-size:12px;border-bottom:3px solid var(--ink);padding-bottom:10px;margin-bottom:clamp(24px,6vw,46px)}
-.lead{font-weight:300;font-size:clamp(17px,4.6vw,25px);line-height:1.5;max-width:30ch;margin-top:22px}
-.lead b{font-weight:700}
-.heroflex{position:relative}
-.chef-big{position:absolute;left:-6px;bottom:-10px;width:clamp(90px,26vw,170px);transform:rotate(6deg);opacity:.92}
-
-/* receipt / ledger rows (CONTAINER) */
+/* problem: receipt rows */
+.kick{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.note{font-weight:300;font-size:clamp(15px,4vw,18.5px);line-height:1.5;max-width:40ch;color:#332c1c}
 .receipt{font-family:var(--mono);margin-top:8px}
-.rrow{display:flex;align-items:baseline;gap:6px;padding:11px 0;border-bottom:1px dashed rgba(21,18,11,.4)}
-.rrow .it{font-family:var(--body);font-weight:700;font-size:clamp(15px,4vw,19px);white-space:nowrap}
-.rrow .dots{flex:1;border-bottom:2px dotted rgba(21,18,11,.35);transform:translateY(-4px)}
-.rrow .pr{font-family:var(--mono);font-weight:700;font-size:clamp(13px,3.4vw,15px);color:var(--red);white-space:nowrap}
-.rsmall{font-weight:300;font-size:13.5px;color:#5a5341;margin-top:3px;font-family:var(--body)}
+.rrow{display:flex;align-items:baseline;gap:8px;padding:13px 0;border-bottom:2px dotted rgba(18,15,8,.45)}
+.rrow:first-child{border-top:4px solid var(--ink)}
+.rrow .it{font-family:var(--body);font-weight:800;font-size:clamp(17px,4.6vw,23px);white-space:nowrap}
+.rrow .dots{flex:1}
+.rrow .pr{font-family:var(--mono);font-weight:700;font-size:clamp(13px,3.4vw,15px);color:var(--red);white-space:nowrap;transform:rotate(-3deg)}
 
-/* recipe steps as numbered ledger */
-.steps{margin-top:10px}
-.step{display:grid;grid-template-columns:auto 1fr;gap:clamp(14px,4vw,24px);align-items:start;
-  padding:16px 0;border-bottom:2px solid var(--ink)}
+/* recipe: huge numbers, asymmetric */
+.step{display:grid;grid-template-columns:auto 1fr;gap:clamp(12px,4vw,26px);align-items:start;padding:18px 0;border-bottom:3px solid var(--ink)}
 .step:last-child{border-bottom:none}
-.step .sn{font-family:var(--disp);font-size:clamp(34px,9vw,60px);line-height:.8;color:var(--red)}
-.step .st{font-family:var(--disp);font-size:clamp(18px,5vw,26px)}
-.step .sd{font-weight:300;font-size:clamp(14px,3.8vw,16.5px);margin-top:3px;line-height:1.45}
+.step .sn{font-family:var(--disp);font-size:clamp(46px,13vw,92px);line-height:.7;color:var(--red);-webkit-text-stroke:0}
+.step:nth-child(even) .sn{color:var(--ink)}
+.step .st{font-family:var(--disp);font-size:clamp(20px,5.4vw,30px)}
+.step .sd{font-weight:300;font-size:clamp(14.5px,3.8vw,17px);margin-top:4px;line-height:1.45;max-width:38ch}
 
-/* live demo: press & hold to cook */
-#cook{text-align:center}
-.pan{position:relative;width:min(86vw,380px);margin:24px auto 0;aspect-ratio:1;
-  border:4px solid var(--ink);background:var(--paper);overflow:hidden}
-.ticket{position:absolute;inset:0;padding:9% 8%;display:grid;align-content:center;gap:7px;
-  opacity:0;transition:opacity .35s;text-align:start}
-.ticket.show{opacity:1}
-.ticket .th{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--red);border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:3px}
-.ticket .trow{display:flex;justify-content:space-between;gap:8px;font-size:12px;align-items:baseline}
-.ticket .tk{font-family:var(--mono);font-weight:700;color:#6b6450;white-space:nowrap}
-.ticket .tv{font-family:var(--body);font-weight:700;font-size:13px;text-align:start}
-.ticket .tban{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:6px;border-top:1px dashed var(--ink);padding-top:6px}
-.coverhint{position:absolute;inset:0;display:grid;place-items:center;background:var(--ink);color:var(--paper);
-  font-family:var(--disp);font-size:clamp(20px,6vw,30px);transition:opacity .3s;z-index:2;text-align:center;padding:8%}
-.coverhint.gone{opacity:0;pointer-events:none}
-.coverhint small{display:block;font-family:var(--mono);font-size:12px;font-weight:400;margin-top:10px;opacity:.8}
-.charge{position:absolute;left:0;bottom:0;height:6px;width:0;background:var(--red);z-index:3;transition:width .05s linear}
-.cookbtn{margin-top:22px;display:inline-block;font-family:var(--disp);font-size:clamp(20px,5.5vw,26px);
-  background:var(--red);color:var(--paper);border:4px solid var(--ink);padding:14px 40px;cursor:pointer;
-  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transform:rotate(-1deg);
-  box-shadow:7px 7px 0 var(--ink);transition:transform .08s,box-shadow .08s}
-.cookbtn.hold{transform:rotate(-1deg) translate(4px,4px);box-shadow:3px 3px 0 var(--ink)}
-.cooknote{font-family:var(--mono);font-size:11.5px;color:#5a5341;margin-top:16px;line-height:1.6}
+/* live demo on an ink slab */
+#cook{background:var(--ink);color:var(--paper);margin:0 calc(-1*clamp(14px,4.5vw,40px));padding:clamp(28px,7vw,56px) clamp(14px,4.5vw,40px)}
+#cook .note{color:#d8cdaf}#cook .h2{color:var(--paper)}
+#cook .stamp{background:var(--paper);color:var(--ink)}
+.cookgrid{display:grid;gap:clamp(20px,5vw,32px);margin-top:22px;align-items:center}
+@media(min-width:720px){.cookgrid{grid-template-columns:1fr 300px}}
+.pan{position:relative;width:min(74vw,300px);aspect-ratio:1;margin:0 auto;border:5px solid var(--paper);border-radius:50%;
+  background:radial-gradient(circle at 38% 32%, #2a2418, #0a0805);overflow:hidden}
+.pan .steam{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--disp);font-size:clamp(30px,9vw,46px);color:var(--paper);opacity:.9}
+.charge{position:absolute;left:0;bottom:0;height:100%;width:0;background:rgba(230,14,22,.4);z-index:1;transition:width .05s linear}
+.panchef{position:absolute;width:42%;left:29%;top:26%;z-index:2;opacity:0;transition:opacity .3s}
+.pan.done .panchef{opacity:1}.pan.done .steam{opacity:0}
+.cookbtn{display:block;width:100%;margin-top:18px;font-family:var(--disp);font-size:clamp(20px,5.5vw,26px);
+  background:var(--red);color:var(--paper);border:4px solid var(--paper);padding:14px;cursor:pointer;user-select:none;
+  -webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s}
+.cookbtn.hold{transform:scale(.97)}
 
-/* take it */
-#take{text-align:start}
-.path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3.2vw,15px);
-  display:inline-block;background:var(--ink);color:var(--paper);padding:10px 16px;margin:14px 0 26px;transform:rotate(-.6deg)}
+/* RESULT card — changes face every cook (the point, made visible) */
+.result{position:relative;min-height:228px;padding:clamp(20px,5vw,30px);transition:background .25s,transform .25s;
+  background:#E5167B;color:#FFF3D6;display:flex;flex-direction:column;justify-content:center}
+.result .rl{font-family:var(--mono);font-weight:700;font-size:11.5px;opacity:.85;margin-bottom:12px}
+.rrow2{display:grid;grid-template-columns:5.5em 1fr;gap:10px;align-items:baseline;padding:7px 0;border-top:1.5px solid currentColor}
+.rrow2 .rk{font-family:var(--mono);font-weight:700;font-size:11.5px;opacity:.82}
+.rrow2 .rv{font-family:var(--disp);font-size:clamp(17px,4.8vw,25px);line-height:1.05}
+.result .rfoot{font-family:var(--body);font-weight:700;font-size:13px;margin-top:14px;opacity:.92}
+.cookhint{font-family:var(--mono);font-size:12px;color:#d8cdaf;margin-top:16px;text-align:center;line-height:1.6}
+.cookhint b{color:var(--paper)}
+
+/* take */
+.path{font-family:var(--mono);font-weight:700;font-size:clamp(12px,3.2vw,15px);display:inline-block;
+  background:var(--ink);color:var(--paper);padding:9px 16px;margin:14px 0 26px;transform:rotate(-.8deg)}
 .acts{display:flex;flex-wrap:wrap;gap:14px}
 .btn{font-family:var(--mono);font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;
-  border:3px solid var(--ink);background:var(--paper);color:var(--ink);padding:13px 22px;
-  transition:background .15s,color .15s,transform .12s}
+  border:3px solid var(--ink);background:transparent;color:var(--ink);padding:13px 22px;transition:background .15s,color .15s,transform .12s}
 .btn:hover{background:var(--ink);color:var(--paper)}.btn:active{transform:translate(2px,2px)}
-.btn.solid{background:var(--red);color:var(--paper);border-color:var(--ink)}
-.btn.solid:hover{background:var(--ink)}
-.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:30px 0;color:var(--ink)}
-.switch a{color:var(--red);font-weight:700}
-footer{background:var(--ink);color:var(--paper);text-align:center;padding:40px 20px;font-family:var(--mono);font-size:12px;line-height:1.8}
-footer .fbig{font-family:var(--disp);font-size:clamp(24px,8vw,46px);display:block;margin-bottom:10px}
+.btn.solid{background:var(--red);color:var(--paper);border-color:var(--ink)}.btn.solid:hover{background:var(--ink)}
+.switch{display:block;text-align:center;font-family:var(--mono);font-size:13px;margin:34px 0;color:var(--ink)}
+.switch a{color:var(--red);font-weight:700;text-decoration:underline}
+footer{background:var(--red);color:var(--paper);text-align:center;padding:44px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;position:relative;overflow:hidden}
+footer .fbig{font-family:var(--disp);font-size:clamp(30px,11vw,72px);display:block;margin-bottom:10px;line-height:.82}
+footer .chef.cf{position:absolute;right:4vw;bottom:-2vw;width:90px;transform:rotate(-10deg);opacity:.85}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);
   color:var(--paper);font-family:var(--mono);font-weight:700;font-size:13px;padding:13px 24px;z-index:99;transition:transform .35s}
 .toast.show{transform:translateX(-50%) translateY(0)}
-@media(prefers-reduced-motion:reduce){.kin .l{animation:none}}
 </style>
 </head>
 <body>
 <!-- bespoke hand-drawn chef mascot, reused throughout (ANOMALY) -->
 <svg width="0" height="0" style="position:absolute"><defs>
-  <g id="chef">
-    <circle cx="50" cy="58" r="26" fill="none" stroke="#15120B" stroke-width="3.5"/>
-    <path d="M26 44 Q22 22 38 24 Q40 10 56 18 Q74 12 72 30 Q86 30 78 46 Z" fill="#EDE3CC" stroke="#15120B" stroke-width="3.5" stroke-linejoin="round"/>
-    <line x1="28" y1="46" x2="74" y2="46" stroke="#15120B" stroke-width="3.5"/>
-    <circle cx="42" cy="58" r="2.6" fill="#15120B"/><circle cx="58" cy="58" r="2.6" fill="#15120B"/>
-    <path d="M40 70 Q50 78 60 70" fill="none" stroke="#E01B1B" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M76 60 Q92 58 90 74" fill="none" stroke="#15120B" stroke-width="3.5" stroke-linecap="round"/>
+  <g id="chefg">
+    <circle cx="50" cy="60" r="25" fill="none" stroke="#120F08" stroke-width="4"/>
+    <path d="M25 46 Q20 22 38 25 Q40 9 57 18 Q76 11 73 31 Q88 31 79 48 Z" fill="#E8DCBF" stroke="#120F08" stroke-width="4" stroke-linejoin="round"/>
+    <line x1="27" y1="48" x2="75" y2="48" stroke="#120F08" stroke-width="4"/>
+    <circle cx="42" cy="60" r="2.8" fill="#120F08"/><circle cx="59" cy="60" r="2.8" fill="#120F08"/>
+    <path d="M40 72 Q50 81 61 72" fill="none" stroke="#E60E16" stroke-width="4" stroke-linecap="round"/>
   </g>
 </defs></svg>
 
-<div class="scene">
+<div class="scroll">
 
   <!-- HERO -->
-  <section class="block" id="top">
-    <div class="topbar"><span>CHAOS-DESIGN</span><span>גרסת השף</span></div>
-    <div class="stamp red mono">מנוע נגד שעמום · סקיל ל-CLAUDE CODE</div>
-    <div class="heroflex">
-      <h1 class="kin mega">מֶרֶד<br><span class="red">בַּמִּטְבָּח</span></h1>
-      <svg viewBox="0 0 100 100" class="chef-big" aria-hidden="true"><use href="#chef"/></svg>
+  <section class="beat" id="hero">
+    <div class="bartop"><span>CHAOS-DESIGN · גרסת השף</span><span>סקיל ל-CLAUDE CODE</span></div>
+    <div style="margin-top:8px"><span class="stamp red">מנוע נגד שעמום</span></div>
+    <div class="megawrap">
+      <h1 class="disp mega clip">מֶרֶד <span class="red">בַּמִּטְבָּח</span></h1>
+      <svg viewBox="0 0 100 110" class="chef c1" aria-hidden="true"><use href="#chefg"/></svg>
     </div>
-    <p class="lead">המחשב הוא שף שמכין כל יום בדיוק <b>אותה מנה</b>, כי ככה בטוח לו. הכלי הזה נכנס לו למטבח, מערבב את המצרכים, ומכריח אותו להמציא משהו שעוד לא טעמת.</p>
+    <p class="lead">המחשב הוא שף שמכין כל יום <b>אותה מנה</b>. הכלי הזה נכנס לו למטבח, מערבב את המצרכים, ומכריח אותו <span class="red">להמציא משהו חדש.</span></p>
   </section>
 
-  <!-- THE PROBLEM as a tired menu -->
-  <section class="block">
-    <span class="stamp mono">התפריט הקבוע של המחשב</span>
-    <h2 class="kin big">אותה מנה.<br>כל פעם.</h2>
+  <div class="rule red"></div>
+
+  <!-- PROBLEM -->
+  <section class="beat">
+    <div class="kick"><span class="stamp">התפריט הקבוע של המחשב</span></div>
+    <h2 class="disp h2">אותה מנה.<br><span class="outline">כל פעם.</span></h2>
     <div class="receipt">
-      <div class="rrow"><span class="it">הכרטיס המעוגל</span><span class="dots"></span><span class="pr">שוב</span></div>
-      <div class="rrow"><span class="it">האימוג'י העצלן</span><span class="dots"></span><span class="pr">שוב</span></div>
-      <div class="rrow"><span class="it">הכותרת באמצע + 3 בלוקים</span><span class="dots"></span><span class="pr">שוב</span></div>
-      <div class="rrow"><span class="it">אותם צבעים, אותו סידור</span><span class="dots"></span><span class="pr">שוב</span></div>
+      <div class="rrow"><span class="it">הכרטיס המעוגל</span><span class="dots"></span><span class="pr">שוב ושוב</span></div>
+      <div class="rrow"><span class="it">האימוג'י העצלן</span><span class="dots"></span><span class="pr">שוב ושוב</span></div>
+      <div class="rrow"><span class="it">כותרת באמצע, 3 בלוקים</span><span class="dots"></span><span class="pr">שוב ושוב</span></div>
+      <div class="rrow"><span class="it">אותם צבעים, אותו סידור</span><span class="dots"></span><span class="pr">שוב ושוב</span></div>
     </div>
-    <p class="rsmall" style="margin-top:18px;font-size:clamp(14px,3.8vw,16.5px);max-width:42ch;line-height:1.55">המחשב מבשל תמיד מהמתכון הכי בטוח, הממוצע של כל מה שראה אי פעם. כל עוד הוא בוחר את המתכון, לא תקבל מנה אחרת.</p>
+    <p class="note" style="margin-top:18px">המחשב מבשל תמיד מהמתכון הכי בטוח, הממוצע של כל מה שראה אי פעם. כל עוד הוא בוחר את המתכון, לא תקבל מנה אחרת.</p>
   </section>
 
-  <!-- THE RECIPE / method -->
-  <section class="block">
-    <span class="stamp red mono">המתכון של המטבח המשוגע</span>
-    <h2 class="kin big">חמישה צעדים,<br>בכל מנה</h2>
-    <div class="steps">
-      <div class="step"><div class="sn">1</div><div><div class="st">נִיצוֹץ</div><div class="sd">זורקים על השיש רעיון מטורף מהחיים, משהו לגמרי לא קשור.</div></div></div>
-      <div class="step"><div class="sn">2</div><div><div class="st">גַּלְגּוּל</div><div class="sd">מגלגלים קובייה. היא בוחרת את הסגנון, לא המחשב.</div></div></div>
-      <div class="step"><div class="sn">3</div><div><div class="st">בִּישׁוּל</div><div class="sd">בונים בדיוק לפי מה שיצא, גם כשלא נוח, בלי לרמות.</div></div></div>
-      <div class="step"><div class="sn">4</div><div><div class="st">כְּלָלֵי הַבַּיִת</div><div class="sd">רשימת אסור שאי אפשר לעבור: אין כרטיס משעמם, אין אימוג'י.</div></div></div>
-      <div class="step"><div class="sn">5</div><div><div class="st">טְעִימָה</div><div class="sd">טועמים. יצא רגיל? זורקים ומתחילים מהתחלה.</div></div></div>
+  <div class="rule"></div>
+
+  <!-- RECIPE -->
+  <section class="beat">
+    <div class="kick"><span class="stamp red">המתכון של המטבח המשוגע</span></div>
+    <h2 class="disp h2" style="margin-bottom:6px">5 צעדים,<br>בכל מנה</h2>
+    <div class="step"><div class="sn">1</div><div><div class="st">נִיצוֹץ</div><div class="sd">זורקים על השיש רעיון מטורף מהחיים, משהו לגמרי לא קשור.</div></div></div>
+    <div class="step"><div class="sn">2</div><div><div class="st">גַּלְגּוּל</div><div class="sd">מגלגלים קובייה. היא בוחרת את הסגנון, לא המחשב.</div></div></div>
+    <div class="step"><div class="sn">3</div><div><div class="st">בִּישׁוּל</div><div class="sd">בונים בדיוק לפי מה שיצא, גם כשלא נוח, בלי לרמות.</div></div></div>
+    <div class="step"><div class="sn">4</div><div><div class="st">כְּלָלֵי הַבַּיִת</div><div class="sd">רשימת אסור שאי אפשר לעבור: אין כרטיס משעמם, אין אימוג'י.</div></div></div>
+    <div class="step"><div class="sn">5</div><div><div class="st">טְעִימָה</div><div class="sd">טועמים. יצא רגיל? זורקים ומתחילים מהתחלה.</div></div></div>
+  </section>
+
+  <!-- LIVE DEMO -->
+  <section class="beat" id="cook">
+    <div class="kick"><span class="stamp">נסה עכשיו · אמיתי לגמרי</span></div>
+    <h2 class="disp h2">תבשל מנה</h2>
+    <p class="note">לחץ והחזק כאילו אתה מבשל. בכל פעם נופל <b>בריף עיצוב אחר</b>, ואתה רואה בעיניים איך הכרטיס משנה פרצוף. זה כל הסקיל, בקטן.</p>
+    <div class="cookgrid">
+      <div>
+        <div class="result" id="result"></div>
+        <p class="cookhint"><b>אותו אתר. כל פעם פרצוף אחר.</b><br>אין שתי תוצאות זהות. זה ההבדל בין ממוצע למשהו חי.</p>
+      </div>
+      <div>
+        <div class="pan" id="pan">
+          <div class="steam">בשל?</div>
+          <div class="charge" id="charge"></div>
+          <svg viewBox="0 0 100 110" class="panchef" aria-hidden="true"><use href="#chefg"/></svg>
+        </div>
+        <button class="cookbtn" id="cookbtn">לחץ והחזק</button>
+      </div>
     </div>
   </section>
 
-  <!-- LIVE DEMO: press & hold to cook -->
-  <section class="block" id="cook">
-    <span class="stamp mono">נסה בעצמך · אמיתי לגמרי</span>
-    <h2 class="kin big">תבשל מנה</h2>
-    <p class="rsmall" style="font-size:clamp(14px,3.8vw,16.5px);max-width:40ch;margin:10px auto 0;line-height:1.55">לחץ והחזק על הכפתור כאילו אתה מבשל. כשהמנה מוכנה, היא מתגלה. כל פעם יוצא משהו אחר.</p>
-    <div class="pan">
-      <div class="ticket" id="ticket"></div>
-      <div class="coverhint" id="cover">לחץ והחזק<small>כדי לבשל מנה</small></div>
-      <div class="charge" id="charge"></div>
-    </div>
-    <button class="cookbtn" id="cookbtn">לחץ והחזק</button>
-    <p class="cooknote mono">כל שליפה אחרת מהקודמת. אותה בקשה, מנה אחרת בכל פעם.</p>
-  </section>
-
-  <!-- TAKE IT -->
-  <section class="block" id="take">
-    <span class="stamp red mono">קח את המתכון</span>
-    <h2 class="kin big">העתק. הדבק.<br>תבשל בעצמך.</h2>
-    <p class="rsmall" style="font-size:clamp(14px,3.8vw,16.5px);max-width:42ch;margin-top:12px;line-height:1.55">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
+  <!-- TAKE -->
+  <section class="beat">
+    <div class="kick"><span class="stamp red">קח את המתכון</span></div>
+    <h2 class="disp h2">העתק.<br>תבשל בעצמך.</h2>
+    <p class="note" style="margin-top:14px">שני קבצים, בלי שום תלות, בלי התקנה מסובכת. שים אותם בתיקייה הזאת ב-Claude Code שלך:</p>
     <span class="path">~/.claude/skills/chaos-design/</span>
     <div class="acts">
       <button class="btn solid" id="copySkill">העתק SKILL.md</button>
       <a class="btn" href="SKILL.md" download>הורד SKILL.md</a>
       <a class="btn" href="dice.py" download>הורד dice.py</a>
     </div>
-    <p class="rsmall" style="margin-top:22px;font-family:var(--mono);font-size:11.5px">דורש גם את creative-seeds (שלב הניצוץ). אותה ערכה אנטי-AI.</p>
+    <p class="mono" style="margin-top:22px;font-size:11.5px;color:#5a5234">דורש גם את creative-seeds (שלב הניצוץ). אותה ערכה אנטי-AI.</p>
   </section>
 
-  <p class="switch">רוצה לטעום את אותו רעיון בסגנון אחר? <a href="dj.html">עבור לגרסת ה-DJ ←</a></p>
+  <p class="switch">בא לך אותו רעיון בסגנון אחר? <a href="dj.html">עבור לגרסת ה-DJ ←</a></p>
 </div>
 
 <footer>
-  <span class="fbig">תפסיק לקבל את אותה מנה.</span>
+  <span class="fbig">תפסיק לקבל<br>אותה מנה.</span>
   chaos-design · a Claude Code skill by Mosh Frenkel<br>
   העמוד הזה בושל על ידי הסקיל עצמו
+  <svg viewBox="0 0 100 110" class="chef cf" aria-hidden="true"><use href="#chefg"/></svg>
 </footer>
 
 <div class="toast" id="toast">הועתק</div>
 
 <script>
-/* real dice engine (web deck) */
-const DECKS={
- LAYOUT:["collage / overlapping torn pieces, intentional mess","hard diagonal grid (everything skewed on one axis)","scattered absolute 'playground' (objects float in space)","editorial spread with marginalia & pull-quotes in the gutter","full-bleed kinetic TYPE as the layout (words ARE the design)","radial / circular orbit around one center point","anarchic masonry (wildly unequal blocks, no rhythm)","spatial map / blueprint / floor-plan","brutal asymmetric split (70/30, one side invades the other)","horizontal sideways flow (a journey across a wall)"],
- INTERACTION:["physics: drag & throw elements, they collide with walls","audio-reactive: generated sound drives the visuals","scroll-jack scenes that morph between fixed states","cursor-as-tool (marker / spotlight / magnet / eraser)","gyro / tilt parallax (phone movement moves the world)","press-and-hold to reveal / charge / unlock","draw-to-reveal (user paints content into view)","time-decay: elements mutate, rot, or grow over time","beat / pulse sync (everything breathes on one clock)","hover-distortion / liquid warp on contact"],
- CONTAINER:["torn / ripped paper edges","sticky notes (rotated, taped)","polaroid photo frames","ticket stub / boarding pass","speech bubbles","terminal / window chrome","tags & labels on strings","handwritten list / checklist","ledger / table / spreadsheet rows","NO container - bleeds onto the page"],
- TYPE:["one giant word per screen, oversized, overflowing the frame","serif display + monospace data, hard clash","vertical / rotated running text","kinetic type (letters move, bob, react)","ransom-note (mixed sizes/weights/styles per word)","variable-weight that thickens on scroll/hover","outline type + solid type interleaved","ALL-CAPS condensed poster type vs tiny captions"],
- PALETTE:["strict duotone (2 colors only, no greys)","near-monochrome + one violently hot accent","intentional clash / 'ugly on purpose' but confident","black & white + a single spot color","risograph 2-spot overprint (offset, misregistered)","neon on near-black","paper cream + ink black, editorial","high-saturation tropical, no dark mode"],
- ANOMALY:["everything tilted exactly 3 degrees","no horizontal lines anywhere - all edges curve or slant","only circles & arcs, zero rectangles","elements allowed to overflow & be clipped by the frame edge","a recurring hand-drawn mascot / scribble appears throughout","one element is ALWAYS moving / alive on every frame","perfect symmetry is forbidden - every pairing is uneven","a deliberate 'broken' glitch that is clearly intentional","scale play - one thing absurdly large or tiny vs the rest","one common color (e.g. blue) is banned from the whole piece"],
- REFERENCE:["Swiss brutalist protest poster","1970s vinyl record sleeve","subway / transit map","punk photocopied zine","kidnapper ransom note","Memphis / 80s postmodern design","tarot card / occult plate","hospital heart-rate monitor","vaporwave shopping mall directory","broadsheet newspaper front page","museum wall / gallery label","retro arcade cabinet / game UI"],
- WILDCARD:["do the deliberate OPPOSITE of one rolled card","merge two cards from one deck into a single hybrid","let the creative-seed override the REFERENCE entirely","add a recurring mascot/character that reacts to the user","one section loudly BREAKS the ANOMALY law, on purpose","collapse it all into ONE uninterrupted scene, no sections","ban the most obvious color for this brand","smash a second LAYOUT into the first halfway through"]
-};
-const WEB=["LAYOUT","INTERACTION","CONTAINER","TYPE","PALETTE","ANOMALY","REFERENCE","WILDCARD"];
-const HE={LAYOUT:"פריסה",INTERACTION:"אינטראקציה",CONTAINER:"מיכל",TYPE:"טיפוגרפיה",PALETTE:"פלטה",ANOMALY:"חוק חריג",REFERENCE:"השראה",WILDCARD:"קלף פראי"};
-const BAN=["כרטיסים מעוגלים בשורה","ירו + 3 בלוקים סימטריים","אימוג'י או אייקון גנרי","כותרת+פסקה במרכז שחוזרת","עמודות שוות סימטריות","אותו עיגול פינות על הכל","לוק סטוק גנרי במרכז"];
+const LAYOUT=["קולאז' של פיסות קרועות","רשת אלכסונית חדה","אובייקטים מרחפים בחלל","מילים ענקיות שהן העיצוב","מסלול מעגלי סביב מרכז","בלוקים בגדלים פרועים","זרימה הצידה לאורך קיר","שרטוט / מפה","חלוקה אסימטרית 70 ל-30"];
+const REF=["פוסטר מחאה ברוטליסטי","עטיפת תקליט שנות 70","מפת רכבת תחתית","זין פאנקי מצולם","פתק כופר חתוך","ממפיס שנות ה-80","קלף טארוט","מוניטור דופק","קניון וייפורווייב","שער עיתון ענק","תווית מוזיאון","ארקייד רטרו"];
+const ANOM=["הכל מוטה 3 מעלות","בלי קו ישר אחד, הכל מתעקל","רק עיגולים, אפס מלבנים","אלמנטים חורגים ונחתכים בקצה","קמע מצויר ביד חוזר לאורך","משהו תמיד זז על המסך","אסור סימטריה, כל זוג לא שווה","גליץ' שבור בכוונה","משחק גדלים קיצוני","צבע אחד אסור לגמרי"];
+const FACES=[{bg:'#E5167B',fg:'#FFF3D6'},{bg:'#018F6F',fg:'#F2EAD0'},{bg:'#2A2BD6',fg:'#EFE7FF'},{bg:'#FF5A1F',fg:'#1A1208'},{bg:'#FFB23E',fg:'#171410'},{bg:'#120F08',fg:'#E8DCBF'},{bg:'#E60E16',fg:'#EDE3CC'}];
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-const ticket=document.getElementById('ticket');
-function cook(){
-  let h='<div class="th">מנה שיצאה · ROLL [web]</div>';
-  WEB.forEach(k=>{h+=`<div class="trow"><span class="tk">${k} · ${HE[k]}</span><span class="tv">${pick(DECKS[k])}</span></div>`;});
-  h+=`<div class="tban">אסור: ${pick(BAN)}</div>`;
-  ticket.innerHTML=h;
+const result=document.getElementById('result');
+let N=0,lastFace=-1;
+function roll(){
+  N++; let fi; do{fi=Math.floor(Math.random()*FACES.length);}while(fi===lastFace); lastFace=fi;
+  const f=FACES[fi], ang=(Math.random()*5-2.5).toFixed(2);
+  const aligns=['right','center','left'], al=aligns[Math.floor(Math.random()*3)];
+  result.style.background=f.bg; result.style.color=f.fg; result.style.transform=`rotate(${ang}deg)`; result.style.textAlign=al;
+  result.innerHTML=`<div class="rl">מנה #${N} · הקובייה ביקשה לבשל:</div>
+    <div class="rrow2"><span class="rk">פריסה</span><span class="rv">${pick(LAYOUT)}</span></div>
+    <div class="rrow2"><span class="rk">מראה כמו</span><span class="rv">${pick(REF)}</span></div>
+    <div class="rrow2"><span class="rk">חוק ברזל</span><span class="rv">${pick(ANOM)}</span></div>
+    <div class="rfoot">${N===1?'זאת מנה אחת. תבשל עוד.':'שונה לגמרי מהקודמת, נכון?'}</div>`;
 }
-cook();
+roll();
 
-/* press & hold to cook (INTERACTION) */
-const btn=document.getElementById('cookbtn'),cover=document.getElementById('cover'),charge=document.getElementById('charge');
-let raf,start=null,done=false;const DUR=900;
-function frame(t){
-  if(start===null)start=t;
-  const p=Math.min(1,(t-start)/DUR);
-  charge.style.width=(p*100)+'%';
-  if(p>=1){finish();return;}
-  raf=requestAnimationFrame(frame);
-}
-function begin(e){e.preventDefault();if(done){reset();}btn.classList.add('hold');btn.textContent='מבשל...';start=null;raf=requestAnimationFrame(frame);}
-function finish(){done=true;cancelAnimationFrame(raf);cook();cover.classList.add('gone');ticket.classList.add('show');btn.classList.remove('hold');btn.textContent='בשל עוד מנה';charge.style.width='0';}
-function cancel(){if(done)return;cancelAnimationFrame(raf);charge.style.width='0';btn.classList.remove('hold');btn.textContent='לחץ והחזק';}
-function reset(){done=false;ticket.classList.remove('show');cover.classList.remove('gone');cover.innerHTML='מחמם...<small>תכף מוכן</small>';}
-btn.addEventListener('pointerdown',begin);
-btn.addEventListener('pointerup',cancel);
-btn.addEventListener('pointerleave',cancel);
-btn.addEventListener('contextmenu',e=>e.preventDefault());
+/* press & hold to cook */
+const btn=document.getElementById('cookbtn'),pan=document.getElementById('pan'),charge=document.getElementById('charge');
+let raf,start=null,charging=false;const DUR=850;
+function frame(t){if(start===null)start=t;const p=Math.min(1,(t-start)/DUR);charge.style.width=(p*100)+'%';
+  if(p>=1){finish();return;}raf=requestAnimationFrame(frame);}
+function begin(e){e.preventDefault();charging=true;btn.classList.add('hold');btn.textContent='מבשל...';
+  pan.querySelector('.steam').textContent='מבשל...';start=null;raf=requestAnimationFrame(frame);}
+function finish(){charging=false;cancelAnimationFrame(raf);roll();pan.classList.add('done');btn.classList.remove('hold');
+  btn.textContent='בשל עוד מנה';setTimeout(()=>{charge.style.width='0';pan.classList.remove('done');pan.querySelector('.steam').textContent='בשל?';},700);}
+function cancel(){if(!charging)return;charging=false;cancelAnimationFrame(raf);charge.style.width='0';
+  pan.querySelector('.steam').textContent='בשל?';btn.classList.remove('hold');btn.textContent='לחץ והחזק';}
+btn.addEventListener('pointerdown',begin);btn.addEventListener('pointerup',cancel);
+btn.addEventListener('pointerleave',cancel);btn.addEventListener('contextmenu',e=>e.preventDefault());
 
-/* copy / toast */
 const toast=document.getElementById('toast');
 function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1900);}
 document.getElementById('copySkill').addEventListener('click',async()=>{
